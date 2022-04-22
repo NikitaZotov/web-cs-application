@@ -1,16 +1,21 @@
 """
     Author Zotov Nikita
 """
+import sys
 
+from server.frontend.configurator import Configurator
 from server.frontend.routes import app
 
 
-def main():
+def main(args):
     try:
-        app.start()
+        configurator = Configurator()
+        configurator.configure(args)
+        app.start(configurator)
     except OSError as error:
         print(error)
 
 
 if __name__ == '__main__':
-    main()
+    args = sys.argv[1:]
+    main(args)

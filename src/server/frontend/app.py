@@ -11,14 +11,13 @@ cors = CORS()
 
 
 class Application(Flask):
-    def __init__(self, configurator: BaseConfigurator):
+    def __init__(self):
         super().__init__(__name__, template_folder='templates')
         cors.init_app(self)
-        self.configurator = configurator
 
-    def start(self) -> None:
+    def start(self, configurator: BaseConfigurator) -> None:
         self.prepare()
-        self.run(host=str(self.configurator.flask_ip), port=self.configurator.flask_port, debug=False)
+        self.run(host=str(configurator.flask_ip), port=configurator.flask_port, debug=False)
 
     def prepare(self) -> None:
         pass

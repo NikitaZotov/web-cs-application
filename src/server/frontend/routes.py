@@ -4,13 +4,10 @@
 from http import HTTPStatus
 
 from flask import render_template, send_from_directory, request, jsonify
-from werkzeug.exceptions import abort
 
 from server.frontend.app import Application
-from server.frontend.configurator import Configurator
 
-configurator = Configurator()
-app = Application(configurator)
+app = Application()
 
 dir_path = ""
 
