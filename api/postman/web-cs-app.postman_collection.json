@@ -1,0 +1,41 @@
+{
+	"info": {
+		"_postman_id": "87ce609c-8723-4598-a8bb-2d26a2f2973d",
+		"name": "web-cs-app",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Get file",
+			"request": {
+				"method": "GET",
+				"header": []
+			},
+			"response": []
+		},
+		{
+			"name": "Set directory",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://127.0.0.1:5000/model/input/prepare",
+					"protocol": "http",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "5000",
+					"path": [
+						"model",
+						"input",
+						"prepare"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
