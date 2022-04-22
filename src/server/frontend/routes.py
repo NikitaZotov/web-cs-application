@@ -23,7 +23,7 @@ def download_file():
     if not file_name:
         return jsonify(error="Empty file name"), HTTPStatus.BAD_REQUEST
 
-    return send_from_directory(dir_path, file_name, error="File or directory not found")
+    return send_from_directory(dir_path, file_name)
 
 
 @app.route('/set', methods=['POST'])
