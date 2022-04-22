@@ -9,17 +9,9 @@
 			"name": "Get file",
 			"request": {
 				"method": "GET",
-				"header": []
-			},
-			"response": []
-		},
-		{
-			"name": "Set directory",
-			"request": {
-				"method": "GET",
 				"header": [],
 				"url": {
-					"raw": "http://127.0.0.1:5000/model/input/prepare",
+					"raw": "http://127.0.0.1:5000/download?file=file.txt",
 					"protocol": "http",
 					"host": [
 						"127",
@@ -29,9 +21,41 @@
 					],
 					"port": "5000",
 					"path": [
-						"model",
-						"input",
-						"prepare"
+						"download"
+					],
+					"query": [
+						{
+							"key": "file",
+							"value": "file.txt"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Set directory",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"url": {
+					"raw": "http://127.0.0.1:5000/set?directory=/home/nikita/upload_dir",
+					"protocol": "http",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "5000",
+					"path": [
+						"set"
+					],
+					"query": [
+						{
+							"key": "directory",
+							"value": "/home/nikita/upload_dir"
+						}
 					]
 				}
 			},
