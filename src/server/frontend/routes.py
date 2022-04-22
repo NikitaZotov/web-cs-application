@@ -8,7 +8,6 @@ from flask import send_from_directory, request, jsonify
 from server.frontend.app import Application
 
 app = Application()
-
 dir_path = ""
 
 
@@ -40,9 +39,14 @@ def set_directory():
     return jsonify(dir_path=dir_path)
 
 
+@app.errorhandler(400)
+def bad_request(error):
+    return jsonify(error=str(error)), HTTPStatus.BAD_REQUEST
+
+
 @app.errorhandler(404)
 def page_not_found(error):
-    return jsonify(error=str(error)), HTTPStatus.BAD_REQUEST
+    return jsonify(error=str(error)), HTTPStatus.NOT_FOUND
 
 
 @app.errorhandler(500)
