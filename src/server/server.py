@@ -14,6 +14,8 @@ class ServerThread(threading.Thread):
     def __init__(self, app: Application, configurator: BaseConfigurator):
         threading.Thread.__init__(self)
         self.server = make_server(str(configurator.flask_ip), configurator.flask_port, app)
+        app.logger.info(f"Initialize server thread [{configurator.flask_ip}:{configurator.flask_port}]")
+
         self.ctx = app.app_context()
         self.ctx.push()
 
@@ -33,8 +35,10 @@ class Server:
     def start(self):
         self._app.prepare()
         self._thread = ServerThread(self._app, self._configurator)
+        self._app.logger.info("Start server")
         self._thread.start()
 
     def stop(self):
         self._thread.shutdown()
         self._thread = None
+        self._app.logger.info("Stop server")

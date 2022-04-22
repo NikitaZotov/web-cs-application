@@ -21,8 +21,10 @@ def index():
 def download_file():
     file_name = request.args.get("file")
     if not file_name:
+        app.logger.debug("Get request for empty file name")
         return jsonify(error="Empty file name"), HTTPStatus.BAD_REQUEST
 
+    app.logger.debug(f"Get file \"{file_name}\" content")
     return send_from_directory(dir_path, file_name)
 
 
@@ -31,8 +33,10 @@ def set_directory():
     global dir_path
     dir_path = request.args.get("directory")
     if not dir_path:
+        app.logger.debug("Post request for empty directory name")
         return jsonify(error="Empty directory name"), HTTPStatus.BAD_REQUEST
 
+    app.logger.debug(f"Set directory \"{dir_path}\"")
     return jsonify(dir_path=dir_path)
 
 
