@@ -3,7 +3,7 @@
 """
 from http import HTTPStatus
 
-from flask import render_template, send_from_directory, request, jsonify
+from flask import send_from_directory, request, jsonify
 
 from server.frontend.app import Application
 
@@ -14,7 +14,7 @@ dir_path = ""
 
 @app.route('/')
 def index():
-    return render_template('index.html')
+    return "Please, check documentation"
 
 
 @app.route('/download')
