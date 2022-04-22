@@ -33,7 +33,7 @@ class Server:
         self._thread = None
 
     def start(self):
-        self._app.prepare()
+        self._app.prepare(str(self._configurator.flask_ip), self._configurator.flask_port)
         self._thread = ServerThread(self._app, self._configurator)
         self._app.logger.info("Start server")
         self._thread.start()

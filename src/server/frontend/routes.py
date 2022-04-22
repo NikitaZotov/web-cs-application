@@ -1,10 +1,12 @@
 """
     Author Zotov Nikita
 """
+import os.path
 from http import HTTPStatus
 
 from flask import send_from_directory, request, jsonify
 
+from server import params
 from server.frontend.app import Application
 
 app = Application()
@@ -27,16 +29,36 @@ def download_file():
     return send_from_directory(dir_path, file_name)
 
 
-@app.route('/set', methods=['POST'])
+@app.route('/check/')
+def check_file():
+    file_name = request.args.get("file")
+    if not file_name:
+        app.logger.debug("Get request for empty file name")
+        return jsonify(error="Empty file name"), HTTPStatus.BAD_REQUEST
+
+    if os.path.exists(dir_path + "/" + file_name):
+        return jsonify(
+            file_path=dir_path + file_name,
+            status=True,
+            link_url=app.get_url() + f"/download?file={file_name}"
+        )
+    else:
+        return jsonify(
+            file_path=dir_path + file_name,
+            status=False
+        )
+
+
+@app.route('/set', methods=['POST', 'GET'])
 def set_directory():
     global dir_path
     dir_path = request.args.get("directory")
     if not dir_path:
         app.logger.debug("Post request for empty directory name")
-        return jsonify(error="Empty directory name"), HTTPStatus.BAD_REQUEST
+        return jsonify(error="Empty directory name", status=False), HTTPStatus.BAD_REQUEST
 
     app.logger.debug(f"Set directory \"{dir_path}\"")
-    return jsonify(dir_path=dir_path)
+    return jsonify(dir_path=dir_path, status=True)
 
 
 @app.errorhandler(400)

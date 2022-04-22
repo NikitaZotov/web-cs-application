@@ -6,7 +6,6 @@ from flask import Flask
 from flask_cors import CORS
 
 from log import get_default_logger
-from ..frontend.configurator import BaseConfigurator
 
 cors = CORS()
 
@@ -18,10 +17,15 @@ class Application(Flask):
         super().__init__(__name__, template_folder='templates')
         cors.init_app(self)
         self.logger = logger
+        self.host: str = ""
+        self.port: int = 0
 
-    def start(self, configurator: BaseConfigurator) -> None:
-        self.prepare()
-        self.run(host=str(configurator.flask_ip), port=configurator.flask_port, debug=False)
+    def prepare(self, host: str, port: int) -> None:
+        self.host = host
+        self.port = port
 
-    def prepare(self) -> None:
-        pass
+    def get_url(self) -> str:
+        return f"http://{self.host}:{self.port}"
+
+    def start(self) -> None:
+        self.run(host=self.host, port=self.port, debug=False)
