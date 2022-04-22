@@ -1,0 +1,27 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<h1>{% block title %} -- {% endblock %}</h1>
+
+<form method="post">
+    <div class="form-group">
+        <label for="title">--</label>
+        <input type="text" name="title"
+               placeholder="Enter" class="form-control" id="title"
+               value="{{ request.form['title'] }}">
+    </div>
+    <div class="form-group">
+        <label for="content">--</label>
+        <textarea name="content" placeholder="Enter"
+                  class="form-control" id="content">{{ request.form['content'] }}</textarea>
+    </div>
+    <div class="form-group">
+        <button type="submit" class="btn btn-primary">Submit</button>
+    </div>
+
+    <div class="form-group">
+        <label for="control-file">--</label>
+        <input type="file" class="form-control-file" id="control-file">
+    </div>
+</form>
+{% endblock %}
