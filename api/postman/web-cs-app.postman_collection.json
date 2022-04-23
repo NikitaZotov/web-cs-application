@@ -60,6 +60,34 @@
 				}
 			},
 			"response": []
+		},
+		{
+			"name": "Check file",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://127.0.0.1:5000/check?file=file.txt",
+					"protocol": "http",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "5000",
+					"path": [
+						"check"
+					],
+					"query": [
+						{
+							"key": "file",
+							"value": "file.txt"
+						}
+					]
+				}
+			},
+			"response": []
 		}
 	]
 }
