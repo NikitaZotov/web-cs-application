@@ -5,7 +5,9 @@
 from flask import Flask
 from flask_cors import CORS
 
+from json_client import client
 from log import get_default_logger
+from ..frontend.configurator import BaseConfigurator
 
 cors = CORS()
 
@@ -20,9 +22,16 @@ class Application(Flask):
         self.host: str = ""
         self.port: int = 0
 
-    def prepare(self, host: str, port: int) -> None:
-        self.host = host
-        self.port = port
+    def prepare(self, configurator: BaseConfigurator) -> None:
+        self.host = str(configurator.flask_ip)
+        self.port = configurator.flask_port
+
+        platform_base_url = f"ws://{configurator.platform_ip}:{configurator.platform_port}/"
+        platform_url = platform_base_url + configurator.platform_url_path
+
+        client.connect(platform_url)
+        if not client.is_connected():
+            raise ConnectionAbortedError("Please start platform server first")
 
     def get_url(self) -> str:
         return f"http://{self.host}:{self.port}"

@@ -6,7 +6,6 @@ from http import HTTPStatus
 
 from flask import send_from_directory, request, jsonify
 
-from server import params
 from server.frontend.app import Application
 
 app = Application()
@@ -29,7 +28,7 @@ def download_file():
     return send_from_directory(dir_path, file_name)
 
 
-@app.route('/check/')
+@app.route('/check')
 def check_file():
     file_name = request.args.get("file")
     if not file_name:
