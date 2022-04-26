@@ -14,11 +14,9 @@ def main(args):
         configurator.configure(args)
         server = Server(app, configurator)
         server.start()
-        #app.start(configurator)
     except OSError as error:
         print(error)
 
 
 if __name__ == '__main__':
-    args = sys.argv[1:]
-    main(args)
+    main(sys.argv[1:])
