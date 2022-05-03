@@ -1,5 +1,4 @@
 #!/bin/bash
-source set_vars.sh
 
 run_server()
 {
@@ -7,7 +6,6 @@ run_server()
   fp=${flask_port:-5000}
   pi=${platform_ip:-127.0.0.1}
   pp=${platform_port:-8090}
-  cd "${APP_ROOT_PATH}"
   python3 src/__main__.py --flask_ip "$fi" --flask_port "$fp" --platform_ip "$pi" --platform_port "$pp"
 }
 
@@ -44,12 +42,7 @@ while getopts "i:p:s:c:h" option; do
 
 set -eo pipefail
 
-cd "${APP_ROOT_PATH}"
-if [ -d "${PLATFORM_PATH}" ];
-	then
-	  run_server
-	else
-	  echo -en "Install project first\n"
-fi
+cd ../
+run_server
 
 cd "${WORKING_PATH}"

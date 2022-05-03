@@ -15,6 +15,11 @@ service = Service()
 dir_path = ""
 
 
+@app.route('/')
+def start():
+    return 'Please, check documentation'
+
+
 @app.route('/kb/<class_idtf>')
 def index(class_idtf):
     param_classes = service.get_objects_params_classes(class_idtf)

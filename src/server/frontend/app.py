@@ -32,6 +32,7 @@ class Application(Flask):
         platform_url = platform_base_url + configurator.platform_url_path
 
         client.connect(platform_url)
+        self.logger.info(f"Connect to platform on {platform_base_url}")
         if not client.is_connected():
             raise ConnectionAbortedError("Please start platform server first")
 

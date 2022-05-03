@@ -14,7 +14,7 @@ Path(root_dir_path / log_dir_path).mkdir(parents=True, exist_ok=True)
 logging.basicConfig(
     format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
     level=logging.DEBUG,
-    handlers=[RotatingFileHandler(root_dir_path / log_dir_path / log_file_name, maxBytes=1_000_000, backupCount=5)],
+    # handlers=[RotatingFileHandler(root_dir_path / log_dir_path / log_file_name, maxBytes=1_000_000, backupCount=5)],
 )
 
 
