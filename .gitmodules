@@ -1,3 +1,4 @@
 [submodule "dockerised-ostis"]
 	path = dockerised-ostis
 	url = https://github.com/ostis-apps/dockerized-ostis.git
+	branch = v0.6.0
