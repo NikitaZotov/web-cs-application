@@ -19,6 +19,8 @@ class Application(Flask):
         super().__init__(__name__, template_folder='templates')
         cors.init_app(self)
         self.logger = logger
+        self.config['SECRET_KEY'] = 'ostis'
+
         self.host: str = ""
         self.port: int = 0
 
