@@ -19,6 +19,7 @@ dir_path = ""
 def index(class_idtf):
     param_classes = service.get_objects_params_classes(class_idtf)
     objects = service.get_objects_with_sorted_params(class_idtf, param_classes)
+    app.logger.debug(f"Get objects of types \"{class_idtf}\"")
 
     return render_template("index.html", class_idtf=class_idtf, param_classes=param_classes, objects=objects)
 
@@ -27,6 +28,7 @@ def index(class_idtf):
 def insert(class_idtf: str):
     if request.method == 'POST':
         object_idtf = request.form['name']
+        app.logger.debug(f"Insert object \"{object_idtf}\" of type \"{class_idtf}\"")
 
         service.add_object(object_idtf, [class_idtf])
         service.add_object_params(object_idtf, request.form)
@@ -40,6 +42,7 @@ def insert(class_idtf: str):
 def update(class_idtf: str, object_idtf: str):
     if request.method == 'POST':
         service.update_object_params(object_idtf, request.form)
+        app.logger.debug(f"Update object \"{object_idtf}\" of type \"{class_idtf}\"")
         flash("Object updated successfully")
 
         return redirect(url_for('index', class_idtf=class_idtf))
@@ -48,6 +51,7 @@ def update(class_idtf: str, object_idtf: str):
 @app.route('/kb/<class_idtf>/delete/<object_idtf>', methods=['GET', 'POST'])
 def delete(class_idtf: str, object_idtf: str):
     service.remove_object(object_idtf)
+    app.logger.debug(f"Remove object \"{object_idtf}\" of type \"{class_idtf}\"")
     flash("Object removed successfully")
 
     return redirect(url_for('index', class_idtf=class_idtf))
@@ -56,6 +60,7 @@ def delete(class_idtf: str, object_idtf: str):
 @app.route('/kb/<class_idtf>/add_attribute', methods=['GET', 'POST'])
 def add_attribute(class_idtf: str):
     service.update_objects_params_classes(class_idtf, [request.form['attribute']])
+    app.logger.debug(f"Update objects attributes of types \"{objects}\"")
     flash("Attribute added successfully")
 
     return redirect(url_for('index', class_idtf=class_idtf))
