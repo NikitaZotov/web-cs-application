@@ -60,7 +60,7 @@ def delete(class_idtf: str, object_idtf: str):
 @app.route('/kb/<class_idtf>/add_attribute', methods=['GET', 'POST'])
 def add_attribute(class_idtf: str):
     service.update_objects_params_classes(class_idtf, [request.form['attribute']])
-    app.logger.debug(f"Update objects attributes of types \"{objects}\"")
+    app.logger.debug(f"Update objects attributes of types \"{class_idtf}\"")
     flash("Attribute added successfully")
 
     return redirect(url_for('index', class_idtf=class_idtf))
