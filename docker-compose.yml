@@ -1,10 +1,10 @@
 version: '3'
 services:
   ostis:
-    build: ./ostis
+    build: ./dockerised-ostis
     container_name: ostis
     volumes:
-      - ./ostis:/ostis
+      - ./dockerised:/dockerised
     restart: on-failure
     network_mode: host
     command: sh ostis --build_kb --sctp
