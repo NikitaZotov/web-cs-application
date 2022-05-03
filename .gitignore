@@ -13,6 +13,7 @@ prepared_kb/
 ostis/
 web-cs-application/
 dockerised-ostis/
+src/loggings
 
 # Distribution / packaging
 .Python
