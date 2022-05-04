@@ -3,16 +3,16 @@
 """
 import sys
 
-from server.frontend.configurator import Configurator
-from server.frontend.routes import app
-from server.server import Server
+from app.server.rest.routes import app
+from app.server.rest.server import RESTServer
+from rest.configurator import RESTConfigurator
 
 
 def main(args):
     try:
-        configurator = Configurator()
+        configurator = RESTConfigurator()
         configurator.configure(args)
-        server = Server(app, configurator)
+        server = RESTServer(app, configurator)
         server.start()
     except OSError as error:
         print(error)

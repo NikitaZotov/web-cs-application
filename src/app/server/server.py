@@ -6,15 +6,15 @@ import threading
 
 from werkzeug.serving import make_server
 
-from .frontend.app import Application
-from .frontend.configurator import BaseConfigurator
+from .configurator import BaseConfigurator
+from .app import Application
 
 
 class ServerThread(threading.Thread):
     def __init__(self, app: Application, configurator: BaseConfigurator):
         threading.Thread.__init__(self)
-        self.server = make_server(str(configurator.flask_ip), configurator.flask_port, app)
-        app.logger.info(f"Initialize server thread [{configurator.flask_ip}:{configurator.flask_port}]")
+        self.server = make_server(str(configurator.ip), configurator.port, app)
+        app.logger.info(f"Initialize server thread [{configurator.ip}:{configurator.port}]")
 
         self.ctx = app.app_context()
         self.ctx.push()

@@ -13,7 +13,7 @@ from json_client.dataclass import ScAddr, ScTemplate
 from json_client.sc_keynodes import ScKeynodes
 
 
-class Service:
+class CRUDService:
     def __init__(self):
         self._keynodes = ScKeynodes()
         self._class_attributes: Dict[str, List[str]] = {}
@@ -34,6 +34,8 @@ class Service:
 
             if not check_edge(class_addr, object_addr, sc_types.EDGE_ACCESS_VAR_POS_PERM):
                 generate_edge(class_addr, object_addr, sc_types.EDGE_ACCESS_CONST_POS_PERM)
+
+        return True
 
     def _get_object(self, object_idtf: str) -> ScAddr:
         return get_element_by_main_idtf(object_idtf)
@@ -62,6 +64,8 @@ class Service:
 
             if not check_edge(class_addr, param_addr, sc_types.EDGE_ACCESS_VAR_POS_PERM):
                 generate_edge(class_addr, param_addr, sc_types.EDGE_ACCESS_CONST_POS_PERM)
+
+        return True
 
     def update_object_params(self, object_idtf: str, param_idtfs: Dict[str, str]) -> bool:
         object_addr = self._get_object(object_idtf)
