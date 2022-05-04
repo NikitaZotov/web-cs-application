@@ -1,13 +1,13 @@
 version: '3'
 services:
   ostis:
-    build: ./dockerised-ostis
+    build: ./dockerized-ostis
     container_name: ostis
     volumes:
-      - ./dockerised:/dockerised
+      - ./dockerized-ostis:/dockerized-ostis
     restart: on-failure
     network_mode: host
-    command: sh ostis --build_kb --sctp
+    command: sh ostis --all
 
   rest-server:
     build: ./src
@@ -32,8 +32,8 @@ services:
     restart: always
     volumes:
       - ./web-cs-application/src/:/web-cs-application/src/
-    #    links:
-    #      - rest-server
+#    links:
+#      - rest-server
     network_mode: host
     command: python3 -m py-scripts.web.__main__
 
@@ -45,5 +45,3 @@ services:
     links:
       - rest-server
       - web-server
-    ports:
-      - "127.0.0.1:7050:7050"
