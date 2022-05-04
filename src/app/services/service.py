@@ -4,13 +4,13 @@
 
 from typing import List, Dict
 
-from common.constants import ScAlias
-from common.generator import generate_node, set_en_main_idtf, generate_edge
-from common.searcher import get_element_by_main_idtf, check_edge, get_en_main_idtf
 from json_client import client
 from json_client.constants import sc_types
 from json_client.dataclass import ScAddr, ScTemplate
 from json_client.sc_keynodes import ScKeynodes
+from modules.common.constants import ScAlias
+from modules.common.generator import generate_node, set_en_main_idtf, generate_edge
+from modules.common.searcher import check_edge, get_element_by_main_idtf, get_en_main_idtf
 
 
 class CRUDService:

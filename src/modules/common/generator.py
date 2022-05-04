@@ -1,23 +1,25 @@
 """
-    Author Zotov Nikita
+    Author Nikita Zotov
 """
 
-from typing import List
+from typing import Callable, List
 
-from common.constants import ScAlias
-from common.identifiers import CommonIdentifiers
-from common.searcher import check_edge
 from json_client import client
 from json_client.constants import sc_types
+from json_client.constants.common import ScEventType
 from json_client.constants.sc_types import ScType
 from json_client.dataclass import (
     ScAddr,
     ScConstruction,
+    ScEvent,
+    ScEventParams,
     ScIdtfResolveParams,
     ScLinkContent,
     ScLinkContentType,
 )
 from json_client.sc_keynodes import ScKeynodes
+from modules.common.constants import ScAlias
+from modules.common.identifiers import CommonIdentifiers
 
 
 def generate_edge(src: ScAddr, trg: ScAddr, edge_type: ScType) -> ScAddr:
@@ -89,15 +91,15 @@ def wrap_in_structure(*elements: ScAddr) -> ScAddr:
     return struct_node
 
 
-def wrap_in_set(elements: List[ScAddr], set_node: ScAddr) -> None:
-    for elem in elements:
-        if not check_edge(set_node, elem, sc_types.EDGE_ACCESS_VAR_POS_PERM):
-            generate_edge(set_node, elem, sc_types.EDGE_ACCESS_CONST_POS_PERM)
-
-
 def generate_binary_relation(src: ScAddr, edge_type: ScType, trg: ScAddr, *relations: ScAddr) -> ScAddr:
     construction = ScConstruction()
     construction.create_edge(edge_type, src, trg, ScAlias.RELATION_EDGE.value)
     for relation in relations:
         construction.create_edge(sc_types.EDGE_ACCESS_CONST_POS_PERM, relation, ScAlias.RELATION_EDGE.value)
     return client.create_elements(construction)[0]
+
+
+def generate_event(addr: ScAddr, event_type: ScEventType, event_func: Callable) -> ScEvent:
+    event_params = ScEventParams(addr, event_type, event_func)
+    sc_event = client.events_create([event_params])
+    return sc_event[0]
