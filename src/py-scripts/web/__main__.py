@@ -5,7 +5,7 @@ import sys
 
 from app.server.web.routes import app
 from app.server.web.server import WebServer
-from web.configurator import WebConfigurator
+from ..web.configurator import WebConfigurator
 
 
 def main(args):

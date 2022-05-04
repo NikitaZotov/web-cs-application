@@ -4,7 +4,7 @@
 import os.path
 from http import HTTPStatus
 
-from flask import send_from_directory, request, jsonify, flash
+from flask import send_from_directory, request, jsonify
 
 from app.server.app import Application
 from app.services.service import CRUDService

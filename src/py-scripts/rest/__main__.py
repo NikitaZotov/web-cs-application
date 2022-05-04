@@ -5,7 +5,7 @@ import sys
 
 from app.server.rest.routes import app
 from app.server.rest.server import RESTServer
-from rest.configurator import RESTConfigurator
+from ..rest.configurator import RESTConfigurator
 
 
 def main(args):

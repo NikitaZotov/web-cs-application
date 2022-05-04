@@ -4,9 +4,9 @@
 import argparse
 from ipaddress import ip_address
 
-from rest import params
-from server import constants
-from server.configurator import BaseConfigurator
+from ..rest import params
+from app.server import constants
+from app.server.configurator import BaseConfigurator
 
 
 class RESTConfigurator(BaseConfigurator):

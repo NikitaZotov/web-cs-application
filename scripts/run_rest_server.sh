@@ -6,7 +6,7 @@ run_server()
   fp=${port:-7040}
   pi=${server_ip:-127.0.0.1}
   pp=${server_port:-8090}
-  python3 "$PWD"/py-scripts/rest/__main__.py --ip "$fi" --port "$fp" --server_ip "$pi" --server_port "$pp"
+  python3 -m py-scripts.rest.__main__ --ip "$fi" --port "$fp" --server_ip "$pi" --server_port "$pp"
 }
 
 help()

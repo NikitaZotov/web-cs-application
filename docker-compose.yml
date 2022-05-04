@@ -9,19 +9,33 @@ services:
     network_mode: host
     command: sh ostis --build_kb --sctp
 
-  flask:
+  rest-server:
     build: ./src
-    container_name: web-cs-application
+    container_name: rest-server
     environment:
       - FLASK_ENV=development
       - PYTHONUNBUFFERED=True
     restart: always
     volumes:
-      - ./web-cs-application:/web-cs-application
+      - ./web-cs-application/src/:/web-cs-application/src/
 #    links:
 #      - ostis
     network_mode: host
-    command: python __main__.py
+    command: python3 -m py-scripts.rest.__main__
+
+  web-server:
+    build: ./src
+    container_name: web-server
+    environment:
+      - FLASK_ENV=development
+      - PYTHONUNBUFFERED=True
+    restart: always
+    volumes:
+      - ./web-cs-application/src/:/web-cs-application/src/
+    #    links:
+    #      - rest-server
+    network_mode: host
+    command: python3 -m py-scripts.web.__main__
 
   nginx:
     image: nginx:1.17.2-alpine
@@ -29,6 +43,7 @@ services:
     volumes:
       - ./default.conf:/etc/nginx/conf.d/default.conf
     links:
-      - flask
+      - rest-server
+      - web-server
     ports:
       - "127.0.0.1:7050:7050"

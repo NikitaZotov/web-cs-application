@@ -6,7 +6,7 @@ run_server()
   fp=${port:-7050}
   si=${server_ip:-127.0.0.1}
   sp=${server_port:-7040}
-  python3 src/py-scripts/web/__main__.py --ip "$fi" --port "$fp" --server_ip "$si" --server_port "$sp"
+  python3 -m py-scripts.web.__main__ --ip "$fi" --port "$fp" --server_ip "$si" --server_port "$sp"
 }
 
 help()
@@ -42,5 +42,5 @@ while getopts "i:p:s:c:h" option; do
 
 set -eo pipefail
 
-cd ../
+cd ../src
 run_server
