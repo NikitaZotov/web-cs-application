@@ -18,7 +18,7 @@ class CommonIdentifiers(Enum):
     RREL_TWO = "rrel_2"
     NREL_BASIC_SEQUENCE = "nrel_basic_sequence"
     NREL_SYSTEM_IDENTIFIER = "nrel_system_identifier"
-    NREL_MAIN_IDENTIFIER = "nrel_main_identifier"
+    NREL_MAIN_IDENTIFIER = "nrel_main_idtf"
     NREL_ANSWER = "nrel_answer"
     CONCEPT_FILENAME = "concept_filename"
     LANG_EN = "lang_en"
