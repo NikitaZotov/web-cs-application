@@ -7,7 +7,7 @@ from http import HTTPStatus
 from flask import send_from_directory, request, jsonify
 
 from app.server.app import Application
-from app.services.service import CRUDService
+from app.services.crud_service import CRUDService
 
 app = Application()
 service = CRUDService()
