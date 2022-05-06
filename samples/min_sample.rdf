@@ -1,0 +1,15 @@
+<rdf:RDF
+    xmlns="http://www.metaphacts.com/resource/"
+    xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
+    xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+    xmlns:cim16="http://iec.ch/TC57/2014/CIM-schema-cim16#">
+    <rdf:Description rdf:about="#_544af4de-411d-47d0-8cf3-c43627e39baa">
+        <cim16:SubGeographicalRegion.Substations rdf:resource="#_ea0ef47a-dde1-4d5a-98cd-d602b803cb22"/>
+        <rdf:type rdf:resource="http://iec.ch/TC57/2014/CIM-schema-cim16#SubGeographicalRegion"/>
+    </rdf:Description>
+    <rdf:Description rdf:about="#_ea0ef47a-dde1-4d5a-98cd-d602b803cb22">
+        <rdf:type rdf:resource="http://iec.ch/TC57/2014/CIM-schema-cim16#Substation"/>
+        <cim16:IdentifiedObject.name>Station415</cim16:IdentifiedObject.name>
+        <cim16:Equipment.normallyInService>false</cim16:Equipment.normallyInService>
+    </rdf:Description>
+</rdf:RDF>

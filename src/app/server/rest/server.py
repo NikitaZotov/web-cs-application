@@ -3,6 +3,8 @@
 """
 from json_client import client
 from log import get_default_logger
+from modules.rdf_to_sc_translation_module.module import RdfToScTranslationModule
+from modules.sc_to_rdf_translation_module.module import ScToRdfTranslationModule
 from ..configurator import BaseConfigurator
 from ..app import Application
 from ..server import Server
@@ -23,3 +25,6 @@ class RESTServer(Server):
 
         if not client.is_connected():
             raise ConnectionAbortedError("Please start platform server first")
+        else:
+            RdfToScTranslationModule()
+            ScToRdfTranslationModule()
