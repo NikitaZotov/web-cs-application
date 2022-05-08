@@ -11,10 +11,13 @@ service = FileService()
 
 @files.route("/api/file/upload", methods=['GET', 'POST'])
 def upload_file():
-    file_name = request.args.get("file_name")
-    struct_name = request.args.get("struct_name")
+    file = request.files["file"]
+    file_name = file.filename
+    struct_name = file_name.split(".")[0].replace(" ", "_") + "_struct"
 
-    status = service.upload(file_name, struct_name)
+    file_content = file.read().decode("utf-8")
+
+    status = service.upload(file_content, struct_name)
     logger.info(f"Upload file \"{file_name}\"")
 
     return jsonify(method="upload", struct_name=struct_name, status=status)
