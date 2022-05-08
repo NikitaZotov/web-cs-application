@@ -1,5 +1,4 @@
 import io
-import os
 from http import HTTPStatus
 
 import requests

@@ -9,3 +9,7 @@ textarea {
     width: 800px;
     height: 800px;
 }
+
+button {
+    margin: 5px 5px 5px 5px
+}

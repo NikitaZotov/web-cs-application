@@ -9,17 +9,23 @@
             <div class="jumbotron p-3">
                 <h2>Manage <b>objects</b>
                     <button type="button"
-                            class="btn btn-success float-right"
+                            class="btn btn-success float-right mr-2"
                             data-toggle="modal"
                             data-target="#add_attribute">
                         Add attribute
                     </button>
-
                     <button type="button"
-                            class="btn btn-success float-right"
+                            class="btn btn-success float-right mr-2"
+                            data-toggle="modal"
+                            data-target="#add_relation">
+                        Add relation
+                    </button>
+                    <button type="button"
+                            class="btn btn-success float-right mr-2"
+                            margin-left="50"
                             data-toggle="modal"
                             data-target="#mymodal">
-                        Add new object
+                        Add object
                     </button>
                 </h2>
 
@@ -31,12 +37,18 @@
                     {% for class in param_classes %}
                         <th>{{class}}</th>
                     {% endfor %}
+                    {% for relation in relations %}
+                        <th>{{relation}}</th>
+                    {% endfor %}
                     </tr>
-                   {% for object, params in objects.items() %}
+                   {% for object, attributes in objects.items() %}
                     <tr>
                         <td>{{object}}</td>
-                        {% for param in params %}
+                        {% for param in attributes["params"] %}
                         <td>{{param}}</td>
+                        {% endfor %}
+                        {% for subjects in attributes["subjects"] %}
+                        <td>{{subjects}}</td>
                         {% endfor %}
                         <td>
                             <a href="/kb/{{class_idtf}}/update"
@@ -64,6 +76,12 @@
                <div class="form-group">
                   <label>{{class}}:</label>
                   <input type="text" class="form-control" name={{class}}>
+               </div>
+               {% endfor %}
+               {% for relation in relations %}
+               <div class="form-group">
+                  <label>{{relation}}:</label>
+                  <input type="text" class="form-control" name={{relation}}>
                </div>
                {% endfor %}
                <div class="form-group">
@@ -95,8 +113,14 @@
                </div>
                {% for class in param_classes %}
                <div class="form-group">
-                  <label>{{class}}</label>
+                  <label>{{class}}:</label>
                   <input type="text" class="form-control" name={{class}} required="1">
+               </div>
+               {% endfor %}
+               {% for relation in relations %}
+               <div class="form-group">
+                  <label>{{relation}}:</label>
+                  <input type="text" class="form-control" name={{relation}}>
                </div>
                {% endfor %}
                <div class="form-group">
@@ -122,6 +146,30 @@
                <div class="form-group">
                   <label>Attribute:</label>
                   <input type="text" class="form-control" name="attribute" required="1">
+               </div>
+               <div class="form-group">
+                  <button class="btn btn-primary" type="submit">Add</button>
+               </div>
+            </form>
+         </div>
+         <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+         </div>
+      </div>
+   </div>
+</div>
+
+<div id="add_relation" class="modal fade" role="dialog">
+   <div class="modal-dialog">
+      <div class="modal-content">
+         <div class="modal-header">
+            <h4 class="modal-title">Add relation</h4>
+         </div>
+         <div class="modal-body">
+            <form action="/kb/{{class_idtf}}/add_relation" method="POST">
+               <div class="form-group">
+                  <label>Relation:</label>
+                  <input type="text" class="form-control" name="relation" required="1">
                </div>
                <div class="form-group">
                   <button class="btn btn-primary" type="submit">Add</button>

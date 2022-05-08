@@ -28,9 +28,12 @@ def index(class_idtf):
     if response.status_code == HTTPStatus.OK:
         json_object = response.json()
         param_classes = json_object.get("param_classes")
+        relations = json_object.get("relations")
         objects = json_object.get("objects")
 
-        return render_template("index.html", class_idtf=class_idtf, param_classes=param_classes, objects=objects)
+        return render_template(
+            "index.html", class_idtf=class_idtf, param_classes=param_classes, relations=relations, objects=objects
+        )
     else:
         return jsonify(response=response.text, status=response.status_code)
 
@@ -70,7 +73,6 @@ def update(class_idtf: str, object_idtf: str):
 @crud.route('/kb/<class_idtf>/delete/<object_idtf>', methods=['GET', 'POST'])
 def delete(class_idtf: str, object_idtf: str):
     logger.debug(f"Remove object \"{object_idtf}\" of type \"{class_idtf}\"")
-    flash("Object removed successfully")
 
     server_url = current_app.config["SERVER_URL"]
     response = requests.delete(f"{server_url}/api/kb/{class_idtf}/delete/{object_idtf}")
@@ -92,6 +94,22 @@ def add_attribute(class_idtf: str):
     )
     if response.status_code == HTTPStatus.OK:
         flash("Attribute added successfully")
+        return redirect(url_for('crud.index', class_idtf=class_idtf))
+    else:
+        return jsonify(response=response.text, status=response.status_code)
+
+
+@crud.route('/kb/<class_idtf>/add_relation', methods=['GET', 'POST'])
+def add_relations(class_idtf: str):
+    logger.debug(f"Update objects relations of types \"{class_idtf}\"")
+
+    server_url = current_app.config["SERVER_URL"]
+    response = requests.post(
+        f"{server_url}/api/kb/{class_idtf}/add_relation",
+        params={"relation": request.form["relation"]}
+    )
+    if response.status_code == HTTPStatus.OK:
+        flash("Relation added successfully")
         return redirect(url_for('crud.index', class_idtf=class_idtf))
     else:
         return jsonify(response=response.text, status=response.status_code)

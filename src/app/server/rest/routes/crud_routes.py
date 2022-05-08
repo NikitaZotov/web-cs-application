@@ -10,7 +10,6 @@ from log import get_default_logger
 
 crud = Blueprint("crud", __name__)
 service = CRUDService()
-dir_path = ""
 
 logger = get_default_logger(__name__)
 
@@ -23,10 +22,14 @@ def start():
 @crud.route('/api/kb/<class_idtf>')
 def index(class_idtf):
     param_classes = service.get_objects_params_classes(class_idtf)
-    objects = service.get_objects_with_sorted_params(class_idtf, param_classes)
+    relations = service.get_objects_relations(class_idtf)
+    objects = service.get_sorted_objects(class_idtf, param_classes, relations)
+    print(objects)
     logger.debug(f"Get objects of types \"{class_idtf}\"")
 
-    return jsonify(method="get_objects", class_idtf=class_idtf, param_classes=param_classes, objects=objects)
+    return jsonify(
+        method="get_objects", class_idtf=class_idtf, param_classes=param_classes, relations=relations, objects=objects
+    )
 
 
 @crud.route('/api/kb/<class_idtf>/insert', methods=['POST'])
@@ -35,7 +38,8 @@ def insert(class_idtf: str):
     logger.debug(f"Insert object \"{object_idtf}\" of type \"{class_idtf}\"")
 
     status = service.add_object(object_idtf, [class_idtf])
-    status &= service.add_object_params(object_idtf, request.args)
+    status &= service.add_object_params(object_idtf, class_idtf, request.args)
+    status &= service.add_relation_between_objects(object_idtf, class_idtf, request.args)
 
     return jsonify(method="insert_object", class_idtf=class_idtf, status=status)
 
@@ -63,6 +67,14 @@ def add_attribute(class_idtf: str):
     logger.debug(f"Update objects attributes of types \"{class_idtf}\"")
 
     return jsonify(method="add_attribute", class_idtf=class_idtf, status=True)
+
+
+@crud.route('/api/kb/<class_idtf>/add_relation', methods=['GET', 'POST'])
+def add_relation(class_idtf: str):
+    service.update_objects_relations(class_idtf, [request.args['relation']])
+    logger.debug(f"Update objects relations of types \"{class_idtf}\"")
+
+    return jsonify(method="add_relation", class_idtf=class_idtf, status=True)
 
 
 @crud.errorhandler(400)
