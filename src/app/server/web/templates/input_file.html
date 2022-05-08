@@ -7,17 +7,9 @@
 
 <form method="post">
     <div class="form-group">
-        <h3><label for="title">Input rdf-text title (it is required)</label></h3>
-        <input type="text" name="title" placeholder="Enter"
-               class="form-control" id="title" required="1"
-               value="{{ request.form['title'] }}">
-    </div>
-    <div class="form-group">
         <h3><label for="content">Input rdf-text</label></h3>
         <textarea name="content" placeholder="Enter" rows="14"
-                  class="form-control" id="content">
-            {{ request.form['content'] }}
-        </textarea>
+                  class="form-control" id="content">{{ request.form['content'] }}</textarea>
     </div>
     <div class="form-group">
         <button type="submit" class="btn btn-primary">Submit</button>
