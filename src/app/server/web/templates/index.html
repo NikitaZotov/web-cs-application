@@ -1,0 +1,83 @@
+{% extends 'base.html' %}
+{% include 'header.html' %}
+
+{% block body %}
+
+<div style="padding-top: 5px" align="justify">
+    <h4>
+        It is a service-applied web-program based on OSTIS technology, named as Ontologies management system (OMS), to
+        automatically solve problems of loading and unloading owl-ontologies into the OSTIS knowledge base, editing them
+        and searching for information in them.
+    </h4>
+</div>
+<div style="padding-top: 10px" align="justify">
+    <h4>
+        Used technologies and means in application:
+    </h4>
+</div>
+<div style="padding-top: 2px" align="justify">
+    <ul>
+        <li>
+            <h4>
+                Python and C++ languages as main programming languages to develop its application;
+            </h4>
+        </li>
+        <li>
+            <h4>
+                OSTIS Technology to store, represent and edit uploaded owl-ontologies;
+            </h4>
+        </li>
+        <li>
+            <h4>
+                Python web-oriented json-protocol to access OSTIS memory;
+            </h4>
+        </li>
+        <li>
+            <h4>
+                RDF-lib for translating owl-ontologies into SC-code and vice versa;
+            </h4>
+        </li>
+        <li>
+            <h4>
+                FLASK and Boostrap frameworks to represent information in a RESTful web-interface;
+            </h4>
+        </li>
+        <li>
+            <h4>
+               Docker-compose building to automatically start servers.
+            </h4>
+        </li>
+    </ul>
+</div>
+<div style="padding-top: 5px" align="justify">
+    <h4>
+        The application currently allows to solve next expert tasks:
+    </h4>
+</div>
+<div style="padding-top: 2px" align="justify">
+    <ol>
+        <li>
+            <h4>
+                <a href="{{url}}/file/upload">Upload owl-ontologies</a> and save their on knowledge base.
+            </h4>
+        </li>
+        <li>
+            <h4>
+                Edit knowledge base ontologies using supported CRUD operations.
+            </h4>
+        </li>
+        <li>
+            <h4>
+                <a href="{{url}}/kb/search">Search object specifications</a> in knowledge base ontologies.
+            </h4>
+        </li>
+        <li>
+            <h4>
+                <a href="{{url}}/file/download">Download owl-ontologies</a> from knowledge base.
+            </h4>
+        </li>
+
+    </ol>
+</div>
+
+{% endblock %}

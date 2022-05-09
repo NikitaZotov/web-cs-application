@@ -17,7 +17,7 @@ logger = get_default_logger(__name__)
 
 @crud.route('/')
 def start():
-    return 'Please, check documentation'
+    return render_template("index.html")
 
 
 @crud.route('/kb/<class_idtf>')
