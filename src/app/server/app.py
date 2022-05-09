@@ -31,6 +31,7 @@ class Application(Flask):
         self.server_host = str(configurator.server_ip)
         self.server_port = configurator.server_port
 
+        self.config["URL"] = self.get_url()
         self.config["SERVER_URL"] = self.get_server_url()
 
     def get_url(self) -> str:

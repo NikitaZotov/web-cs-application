@@ -31,6 +31,14 @@ def index(class_idtf):
     )
 
 
+@crud.route('/api/kb/classes/<int:struct_id>')
+def get_classes(struct_id):
+    classes = service.get_structure_classes(struct_id)
+    logger.debug(f"Get classes from structure \"{struct_id}\"")
+
+    return jsonify(method="get_classes", structure_id=struct_id, classes=classes)
+
+
 @crud.route('/api/kb/<class_idtf>/insert', methods=['POST'])
 def insert(class_idtf: str):
     object_idtf = request.args.get("name")

@@ -21,7 +21,7 @@ from modules.common.log_messages import (
 )
 from modules.common.searcher import get_system_idtf
 from modules.rdf_to_sc_translation_module.identifiers import TranslationIdentifiers
-from modules.sc_to_rdf_translation_module.searcher import RdfConstructionsSearcher
+from modules.rdf_searcher.searcher import RdfConstructionsSearcher
 
 logger = get_default_logger(__name__)
 

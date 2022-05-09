@@ -42,36 +42,47 @@ def index(class_idtf):
         return jsonify(response=response.text, status=response.status_code)
 
 
+@crud.route('/kb/classes/<int:struct_id>')
+def get_classes(struct_id):
+    logger.debug(f"Get classes from structure \"{struct_id}\"")
+
+    server_url = current_app.config["SERVER_URL"]
+    response = requests.get(f"{server_url}/api/kb/classes/{struct_id}")
+    if response.status_code == HTTPStatus.OK:
+        json_object = response.json()
+        return render_template("show_classes_list.html", classes=json_object.get("classes"))
+    else:
+        return jsonify(response=response.text, status=response.status_code)
+
+
 @crud.route('/kb/<class_idtf>/insert', methods=['POST'])
 def insert(class_idtf: str):
-    if request.method == 'POST':
-        object_idtf = request.form['name']
-        logger.debug(f"Insert object \"{object_idtf}\" of type \"{class_idtf}\"")
+    object_idtf = request.form['name']
+    logger.debug(f"Insert object \"{object_idtf}\" of type \"{class_idtf}\"")
 
-        server_url = current_app.config["SERVER_URL"]
-        response = requests.post(f"{server_url}/api/kb/{class_idtf}/insert", params=request.form)
-        if response.status_code == HTTPStatus.OK:
-            flash("Object inserted successfully")
-            return redirect(url_for('crud.show_objects', class_idtf=class_idtf))
-        else:
-            return jsonify(response=response.text, status=response.status_code)
+    server_url = current_app.config["SERVER_URL"]
+    response = requests.post(f"{server_url}/api/kb/{class_idtf}/insert", params=request.form)
+    if response.status_code == HTTPStatus.OK:
+        flash("Object inserted successfully")
+        return redirect(url_for('crud.show_objects', class_idtf=class_idtf))
+    else:
+        return jsonify(response=response.text, status=response.status_code)
 
 
 @crud.route('/kb/<class_idtf>/update/<object_idtf>', methods=['GET', 'POST'])
 def update(class_idtf: str, object_idtf: str):
-    if request.method == 'POST':
-        logger.debug(f"Update object \"{object_idtf}\" of type \"{class_idtf}\"")
+    logger.debug(f"Update object \"{object_idtf}\" of type \"{class_idtf}\"")
 
-        server_url = current_app.config["SERVER_URL"]
-        response = requests.put(
-            f"{server_url}/api/kb/{class_idtf}/update/{object_idtf}",
-            params=request.form
-        )
-        if response.status_code == HTTPStatus.OK:
-            flash("Object updated successfully")
-            return redirect(url_for('crud.show_objects', class_idtf=class_idtf))
-        else:
-            return jsonify(response=response.text, status=response.status_code)
+    server_url = current_app.config["SERVER_URL"]
+    response = requests.put(
+        f"{server_url}/api/kb/{class_idtf}/update/{object_idtf}",
+        params=request.form
+    )
+    if response.status_code == HTTPStatus.OK:
+        flash("Object updated successfully")
+        return redirect(url_for('crud.show_objects', class_idtf=class_idtf))
+    else:
+        return jsonify(response=response.text, status=response.status_code)
 
 
 @crud.route('/kb/<class_idtf>/delete/<object_idtf>', methods=['GET', 'POST'])

@@ -48,12 +48,16 @@ class RdfToScTranslator:
 
     def translate_graph_to_sc(self, rdf_model_text: str, structure: ScAddr, is_diff: bool) -> Graph:
         logger.info(generate_start_message(self.__class__))
+
         rdf_graph = self.parse_graph(rdf_model_text)
         logger.info(generate_parsed_graph_message(self.__class__))
+
         resolved_elements, elements_for_addition = self.resolve_elements(rdf_graph, is_diff)
         logger.info(generate_elements_resolved_message(self.__class__))
+
         add_elements_in_set(elements_for_addition, structure)
         logger.info(generate_elements_added_to_structure_message(self.__class__))
+
         generate_relations_in_structure(rdf_graph, resolved_elements, structure, is_diff)
         logger.info(generate_relations_in_structure_message(self.__class__))
         return rdf_graph
@@ -78,14 +82,18 @@ class RdfToScTranslator:
                 literals_to_resolve.append(str(obj))
             else:
                 iris_to_resolve.update({str(obj): False})
+
         resolved_iris, iri_structures_elements = self.resolve_iris(iris_to_resolve, is_diff)
         resolved_literals, literals_structures_elements = self.resolve_literals(literals_to_resolve, is_diff)
+
         resolved_elements.update(resolved_iris)
         resolved_elements.update(resolved_literals)
+
         if iri_structures_elements:
             elements_for_addition.append(self.keynodes[TranslationIdentifiers.NREL_IRI.value])
         if literals_structures_elements:
             elements_for_addition.append(self.keynodes[TranslationIdentifiers.NREL_LITERAL_CONTENT.value])
+
         elements_for_addition.extend(iri_structures_elements)
         elements_for_addition.extend(literals_structures_elements)
 
@@ -103,6 +111,7 @@ class RdfToScTranslator:
             resolved_iris.update(found_nodes)
         else:
             resolved_iris = {iri: None for iri in list(iris.keys())}
+
         iris_to_generate = {}
         for iri, addr in resolved_iris.items():
             if addr is None:
@@ -111,10 +120,13 @@ class RdfToScTranslator:
                 else:
                     node_type = sc_types.NODE_CONST
                 iris_to_generate.update({iri: node_type})
+
         generated_iri_nodes = generate_cim_nodes(iris_to_generate, with_idtf=True)
         resolved_iris.update(generated_iri_nodes)
+
         generated_elements = generate_relation_to_link(generated_iri_nodes, nrel_iri)
         elements_for_addition.extend(generated_elements)
+
         return resolved_iris, elements_for_addition
 
     def resolve_literals(self, literals: List[str], is_diff: bool) -> Tuple[Dict[str, ScAddr], List]:
@@ -124,6 +136,7 @@ class RdfToScTranslator:
             LiteralValues.FALSE.value: self.keynodes[LITERALS[LiteralValues.FALSE.value]],
         }
         elements_for_addition = []
+
         if is_diff:
             found_literals = find_literal_nodes_by_content(literals)
             for literal_node in found_literals.values():
@@ -135,11 +148,15 @@ class RdfToScTranslator:
         else:
             resolved_literals.update({literal: None for literal in literals})
         literals_to_generate = {}
+
         for literal, addr in resolved_literals.items():
             if addr is None:
                 literals_to_generate.update({literal: sc_types.NODE_CONST})
+
         generated_literals = generate_cim_nodes(literals_to_generate, with_idtf=False)
         resolved_literals.update(generated_literals)
+
         generated_elements = generate_relation_to_link(generated_literals, nrel_literal_content)
         elements_for_addition.extend(generated_elements)
+
         return resolved_literals, elements_for_addition

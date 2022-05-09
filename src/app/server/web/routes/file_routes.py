@@ -33,7 +33,10 @@ def upload_file():
 
         if response.status_code == HTTPStatus.OK:
             json_object = response.json()
-            return json_object
+            struct_id = json_object.get("struct_id")
+
+            url = current_app.config["URL"]
+            return redirect(f"{url}/kb/classes/{struct_id}")
 
     return render_template("input_file.html")
 

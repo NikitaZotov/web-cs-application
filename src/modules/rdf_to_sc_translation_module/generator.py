@@ -104,6 +104,7 @@ def generate_cim_nodes(nodes_to_generate: Dict[str, ScType], with_idtf=False) ->
     for chunk in nodes_to_generate_list_chunks:
         params_for_resolving = []
         construction = ScConstruction()
+
         for content, node_type in chunk:
             if with_idtf:
                 params = get_params_for_resolve_idtf(content, node_type)
@@ -116,8 +117,10 @@ def generate_cim_nodes(nodes_to_generate: Dict[str, ScType], with_idtf=False) ->
             else:
                 construction.create_node(node_type)
                 content_empty_idtf.append(content)
+
         nodes_with_idtf.extend(client.resolve_keynodes(params_for_resolving))
         empty_nodes.extend(client.create_elements(construction))
+
     cim_nodes_with_idtf = dict(zip(content_empty_idtf, empty_nodes))
     cim_nodes_with_idtf.update(zip(content_with_idtf, nodes_with_idtf))
     return cim_nodes_with_idtf
