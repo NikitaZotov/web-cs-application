@@ -20,6 +20,7 @@ from json_client.dataclass import (
 from json_client.sc_keynodes import ScKeynodes
 from modules.common.constants import ScAlias
 from modules.common.identifiers import CommonIdentifiers
+from modules.common.searcher import check_edge
 
 
 def generate_edge(src: ScAddr, trg: ScAddr, edge_type: ScType) -> ScAddr:
@@ -89,6 +90,12 @@ def wrap_in_structure(*elements: ScAddr) -> ScAddr:
     for elem in elements:
         generate_edge(struct_node, elem, sc_types.EDGE_ACCESS_CONST_POS_PERM)
     return struct_node
+
+
+def wrap_in_set(elements: List[ScAddr], set_node: ScAddr) -> None:
+    for elem in elements:
+        if not check_edge(set_node, elem, sc_types.EDGE_ACCESS_VAR_POS_PERM):
+            generate_edge(set_node, elem, sc_types.EDGE_ACCESS_CONST_POS_PERM)
 
 
 def generate_binary_relation(src: ScAddr, edge_type: ScType, trg: ScAddr, *relations: ScAddr) -> ScAddr:

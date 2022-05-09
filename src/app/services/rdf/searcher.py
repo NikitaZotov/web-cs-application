@@ -59,6 +59,10 @@ class RdfModelSpecificationSearcher(ModelSpecificationSearcher):
             return object_idtf
 
         iri_str = self._searcher.get_element_iri_str(object_addr)
+
+        if not iri_str:
+            return iri_str
+
         idtfs = iri_str.split("#")
 
         if len(idtfs) != 0:

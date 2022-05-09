@@ -34,17 +34,17 @@
                     <tr>
                         <th>Name</th>
                     {% for class in param_classes %}
-                        <th>{{class.split("#")[1].replace("_", " ")}}</th>
+                        <th>{{class}}</th>
                     {% endfor %}
                     {% for relation in relations %}
-                        <th>{{relation.split("#")[1].replace("_", " ")}}</th>
+                        <th>{{relation}}</th>
                     {% endfor %}
                     </tr>
                    {% for object, attributes in objects.items() %}
                     <tr>
-                        <td>{{object.split("#")[1].replace("_", " ")}}</td>
+                        <td>{{object}}</td>
                         {% for param in attributes["params"] %}
-                        <td>{{param.split("#")[1].replace("_", " ")}}</td>
+                        <td>{{param}}</td>
                         {% endfor %}
                         {% for subjects in attributes["subjects"] %}
                         <td>{{subjects}}</td>

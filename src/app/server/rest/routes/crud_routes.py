@@ -47,15 +47,16 @@ def insert():
     params = {}
     params.update(request.args)
     class_idtf = request.args.get("class_idtf")
+    struct_id = int(request.args.get("struct_id"))
     object_idtf = request.args.get("name")
 
     filter_params(params)
 
     logger.debug(f"Insert object \"{object_idtf}\" of type \"{class_idtf}\"")
 
-    status = service.add_object(object_idtf, [class_idtf])
-    status &= service.add_object_params(object_idtf, class_idtf, params)
-    status &= service.add_relation_between_objects(object_idtf, class_idtf, params)
+    status = service.add_object(object_idtf, struct_id, [class_idtf])
+    status &= service.add_object_params(object_idtf, class_idtf, struct_id, params)
+    status &= service.add_relation_between_objects(object_idtf, class_idtf, struct_id, params)
 
     return jsonify(method="insert_object", class_idtf=class_idtf, status=status)
 
@@ -64,11 +65,12 @@ def insert():
 def update(object_idtf: str):
     params = {}
     params.update(request.args)
+    struct_id = int(request.args.get("struct_id"))
     class_idtf = request.args.get("class_idtf")
 
     filter_params(params)
 
-    status = service.update_object_params(object_idtf, params)
+    status = service.update_object_params(object_idtf, struct_id, params)
     logger.debug(f"Update object \"{object_idtf}\" of type \"{class_idtf}\"")
 
     return jsonify(method="update_object", class_idtf=class_idtf, status=status)
