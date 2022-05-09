@@ -27,6 +27,7 @@ def index():
     param_classes = service.get_objects_params_classes(class_idtf, struct_id)
     relations = service.get_objects_relations(class_idtf, struct_id)
     objects = service.get_sorted_objects(class_idtf, struct_id, param_classes, relations)
+    print(objects)
     logger.debug(f"Get objects of types \"{class_idtf}\"")
 
     return jsonify(

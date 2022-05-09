@@ -18,3 +18,6 @@ class ModelSpecificationSearcher:
 
     def get_class_elements(self, class_addr: ScAddr, struct_addr: ScAddr) -> List[ScTemplateResult]:
         raise NotImplementedError
+
+    def get_link_content(self, object_addr: ScAddr) -> str:
+        raise NotImplementedError

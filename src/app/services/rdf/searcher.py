@@ -10,7 +10,7 @@ from json_client.sc_keynodes import ScKeynodes
 from modules.common.constants import ScAlias
 from modules.common.generator import set_en_main_idtf
 from modules.common.searcher import get_element_by_main_idtf, get_element_by_system_idtf, get_en_main_idtf, \
-    get_system_idtf
+    get_system_idtf, get_link_content
 from modules.rdf_searcher.searcher import RdfConstructionsSearcher
 from ...services.rdf.identifiers import RdfIdentifiers
 from ...services.searcher import ModelSpecificationSearcher
@@ -136,3 +136,19 @@ class RdfModelSpecificationSearcher(ModelSpecificationSearcher):
             self._keynodes[RdfIdentifiers.RDF_NREL_TYPE.value],
         )
         return client.template_search(template)
+
+    def get_link_content(self, object_addr: ScAddr) -> str:
+        template = ScTemplate()
+        template.triple_with_relation(
+            object_addr,
+            sc_types.EDGE_D_COMMON_VAR,
+            [sc_types.LINK_VAR, ScAlias.NODE.value],
+            sc_types.EDGE_ACCESS_VAR_POS_PERM,
+            self._keynodes[RdfIdentifiers.NREL_LITERAL_CONTENT.value],
+        )
+        result = client.template_search(template)
+
+        if len(result) != 0:
+            return get_link_content(result[0].get(ScAlias.NODE.value))
+
+        return ""

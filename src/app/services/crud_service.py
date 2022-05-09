@@ -236,13 +236,12 @@ class CRUDService:
                         subjects.append(subject_idtf)
                     continue
 
-                content = get_link_content(subject_addr)
-                print(content)
-                if content:
+                content = self._searcher.get_link_content(subject_addr)
+                if content is not None and content:
                     if subjects is None:
-                        pairs.update({relation_idtf: [content]})
+                        pairs.update({relation_idtf: [str(content)]})
                     else:
-                        subjects.append(content)
+                        subjects.append(str(content))
 
         return pairs
 
@@ -343,6 +342,9 @@ class CRUDService:
                 relation_addr = item.get(ScAlias.RELATION_NODE.value)
                 relation_idtf = self._searcher.get_object_idtf(relation_addr)
                 if relation_idtf.endswith("identifier*"):
+                    continue
+
+                if relation_idtf.endswith('nrel_iri'):
                     continue
 
                 literal_postfix = " (literal)"
