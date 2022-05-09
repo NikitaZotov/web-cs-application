@@ -11,6 +11,7 @@
         <textarea name="content" placeholder="Enter" rows="14"
                   class="form-control" id="content">{{ request.form['content'] }}</textarea>
     </div>
+
     <div class="form-group">
         <button type="submit" class="btn btn-primary">Submit</button>
     </div>
@@ -18,8 +19,9 @@
 
 <form method="POST" enctype="multipart/form-data">
     <h3><label for="content">Or upload rdf-file (formats: .rdf, .xml)</label></h3>
-    <input type="file" name="file">
-    <div class="form-group" style="padding-top: 5px">
+    <input type="file" name="file" class="btn btn-primary" accept=".xml, .rdf">
+
+    <div class="form-group" style="padding-top: 10px">
         <button type="submit" class="btn btn-primary">Upload</button>
     </div>
 </form>
