@@ -32,7 +32,11 @@ def index(class_idtf):
         objects = json_object.get("objects")
 
         return render_template(
-            "show_objects.html", class_idtf=class_idtf, param_classes=param_classes, relations=relations, objects=objects
+            "show_objects.html",
+            class_idtf=class_idtf,
+            param_classes=param_classes,
+            relations=relations,
+            objects=objects,
         )
     else:
         return jsonify(response=response.text, status=response.status_code)
