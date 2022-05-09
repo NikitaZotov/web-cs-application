@@ -22,9 +22,8 @@
                     </button>
                     <button type="button"
                             class="btn btn-success float-right mr-2"
-                            margin-left="50"
                             data-toggle="modal"
-                            data-target="#mymodal">
+                            data-target="#create">
                         Add object
                     </button>
                 </h2>
@@ -35,28 +34,28 @@
                     <tr>
                         <th>Name</th>
                     {% for class in param_classes %}
-                        <th>{{class}}</th>
+                        <th>{{class.split("#")[1].replace("_", " ")}}</th>
                     {% endfor %}
                     {% for relation in relations %}
-                        <th>{{relation}}</th>
+                        <th>{{relation.split("#")[1].replace("_", " ")}}</th>
                     {% endfor %}
                     </tr>
                    {% for object, attributes in objects.items() %}
                     <tr>
-                        <td>{{object}}</td>
+                        <td>{{object.split("#")[1].replace("_", " ")}}</td>
                         {% for param in attributes["params"] %}
-                        <td>{{param}}</td>
+                        <td>{{param.split("#")[1].replace("_", " ")}}</td>
                         {% endfor %}
                         {% for subjects in attributes["subjects"] %}
                         <td>{{subjects}}</td>
                         {% endfor %}
                         <td>
-                            <a href="/kb/{{class_idtf}}/update"
+                            <a href="/kb/update?struct_id={{struct_id}}&class_idtf={{class_idtf}}"
                                class="btn btn-warning btn-xs" data-toggle="modal"
-                               data-target="#modaledit{{object}}">
+                               data-target="#update_{{object}}">
                                 Edit
                             </a>
-                            <a href="/kb/{{class_idtf}}/delete/{{object}}"
+                            <a href="/kb/delete/{{object}}?struct_id={{struct_id}}&class_idtf={{class_idtf}}"
                                class="btn btn-danger btn-xs"
                                onclick="return confirm('Are You Sure To Delete ?')">
                                 Delete
@@ -64,14 +63,14 @@
                         </td>
                     </tr>
 
-<div id="modaledit{{object}}" class="modal fade" role="dialog">
+<div id="update_{{object}}" class="modal fade" role="dialog">
    <div class="modal-dialog">
       <div class="modal-content">
          <div class="modal-header">
             <h4 class="modal-title">Update object</h4>
          </div>
          <div class="modal-body">
-            <form action="/kb/{{class_idtf}}/update/{{object}}" method="POST">
+            <form action="/kb/update/{{object}}?struct_id={{struct_id}}&class_idtf={{class_idtf}}" method="POST">
                {% for class in param_classes %}
                <div class="form-group">
                   <label>{{class}}:</label>
@@ -99,14 +98,14 @@
                 </table>
             </div>
 
-<div id="mymodal" class="modal fade" role="dialog">
+<div id="create" class="modal fade" role="dialog">
    <div class="modal-dialog">
       <div class="modal-content">
          <div class="modal-header">
             <h4 class="modal-title">Add object</h4>
          </div>
          <div class="modal-body">
-            <form action="/kb/{{class_idtf}}/insert" method="POST">
+            <form action="/kb/insert?struct_id={{struct_id}}&class_idtf={{class_idtf}}" method="POST">
                <div class="form-group">
                   <label>Name:</label>
                   <input type="text" class="form-control" name="name" required="1">
@@ -142,7 +141,7 @@
             <h4 class="modal-title">Add attribute</h4>
          </div>
          <div class="modal-body">
-            <form action="/kb/{{class_idtf}}/add_attribute" method="POST">
+            <form action="/kb/add_attribute?struct_id={{struct_id}}&class_idtf={{class_idtf}}" method="POST">
                <div class="form-group">
                   <label>Attribute:</label>
                   <input type="text" class="form-control" name="attribute" required="1">
@@ -166,7 +165,7 @@
             <h4 class="modal-title">Add relation</h4>
          </div>
          <div class="modal-body">
-            <form action="/kb/{{class_idtf}}/add_relation" method="POST">
+            <form action="/kb/add_relation?struct_id={{struct_id}}&class_idtf={{class_idtf}}" method="POST">
                <div class="form-group">
                   <label>Relation:</label>
                   <input type="text" class="form-control" name="relation" required="1">

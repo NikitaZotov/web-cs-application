@@ -17,7 +17,9 @@ from json_client.dataclass import (
     ScLinkContentType,
     ScTemplate,
 )
+from json_client.sc_keynodes import ScKeynodes
 from modules.common.constants import ScAlias
+from modules.common.identifiers import CommonIdentifiers
 from modules.rdf_to_sc_translation_module.constants import NUM_OF_ELEMENTS_FOR_SINGLE_CREATION
 
 
@@ -36,9 +38,7 @@ def generate_rdf_triple_in_structure(subj: ScAddr, obj: ScAddr, pred: ScAddr, st
     client.template_generate(templ, {})
 
 
-def generate_relations_in_structure(
-    parsed_graph: Graph, resolved: Dict[str, ScAddr], structure: ScAddr, is_diff: bool
-) -> None:
+def generate_relations_in_structure(parsed_graph: Graph, resolved: Dict[str, ScAddr], structure: ScAddr) -> None:
     def process_graph_tripple(subj, pred, obj, constr):
         subj_addr = resolved[str(subj)]
         obj_addr = resolved[str(obj)]
@@ -47,31 +47,14 @@ def generate_relations_in_structure(
         common_alias = f"{ScAlias.COMMON_EDGE.value}_{str(subj)}_{str(obj)}_{str(pred)}"
         access_alias = f"{ScAlias.ACCESS_EDGE.value}_{str(subj)}_{str(obj)}_{str(pred)}"
 
-        if not is_diff:
-            _update_construction(constr, subj_addr, obj_addr, pred_addr, structure, common_alias, access_alias)
-        else:
-            template = ScTemplate()
-            template.triple_with_relation(
-                subj_addr,
-                [sc_types.EDGE_D_COMMON_VAR, common_alias],
-                obj_addr,
-                [sc_types.EDGE_ACCESS_VAR_POS_PERM, access_alias],
-                pred_addr,
-            )
-            result = client.template_search(template)
-
-            if len(result) > 0:
-                item = result[0]
-                constr.create_edge(sc_types.EDGE_ACCESS_CONST_POS_PERM, structure, item.get(common_alias))
-                constr.create_edge(sc_types.EDGE_ACCESS_CONST_POS_PERM, structure, item.get(access_alias))
-            else:
-                _update_construction(constr, subj_addr, obj_addr, pred_addr, structure, common_alias, access_alias)
+        _update_construction(constr, subj_addr, obj_addr, pred_addr, structure, common_alias, access_alias)
 
     generation_counter = 0
     construction = ScConstruction()
     for subj, pred, obj in parsed_graph:
         if generation_counter == NUM_OF_ELEMENTS_FOR_SINGLE_CREATION:
             generation_counter = 0
+
             client.create_elements(construction)
             construction = ScConstruction()
         process_graph_tripple(subj, pred, obj, construction)
@@ -127,17 +110,34 @@ def generate_cim_nodes(nodes_to_generate: Dict[str, ScType], with_idtf=False) ->
 
 
 def generate_relation_to_link(nodes_to_generate: Dict[str, ScAddr], relation: ScAddr) -> List[ScAddr]:
+    keynodes = ScKeynodes()
+    main_relation = keynodes[CommonIdentifiers.NREL_MAIN_IDENTIFIER.value]
+
     nodes_to_generate_list_chunks = _chunks(list(nodes_to_generate.items()))
     generated_elements = []
     for chunk in nodes_to_generate_list_chunks:
         construction = ScConstruction()
         for content, node in chunk:
+            postfix = "_idtf"
             link_content_alias = f"{ScAlias.LINK.value}_{content}"
             common_edge_content_alias = f"{ScAlias.COMMON_EDGE.value}_{content}"
+
             link_content = ScLinkContent(content, ScLinkContentType.STRING.value)
             construction.create_link(sc_types.LINK, link_content, link_content_alias)
+
             construction.create_edge(sc_types.EDGE_D_COMMON_CONST, node, link_content_alias, common_edge_content_alias)
             construction.create_edge(sc_types.EDGE_ACCESS_CONST_POS_PERM, relation, common_edge_content_alias)
+
+            # link_content = ScLinkContent(content.split("#")[1].replace("_", " "), ScLinkContentType.STRING.value)
+            # construction.create_link(sc_types.LINK, link_content, link_content_alias + postfix)
+            #
+            # construction.create_edge(
+            #     sc_types.EDGE_D_COMMON_CONST, node, link_content_alias + postfix, common_edge_content_alias + postfix
+            # )
+            # construction.create_edge(
+            #     sc_types.EDGE_ACCESS_CONST_POS_PERM, main_relation, common_edge_content_alias + postfix
+            # )
+
             generated_elements.append(node)
         generated_elements.extend(client.create_elements(construction))
     return generated_elements
@@ -166,6 +166,12 @@ def get_params_for_resolve_idtf(content: str, node_type: ScType) -> Optional[ScI
     if rdf_substr in content:
         prefix = "rdf_"
         part = content.split(rdf_substr, 1)[1]
+
+    rdf_substr = "rdf-schema#"
+    if rdf_substr in content:
+        prefix = "rdf_"
+        part = content.split(rdf_substr, 1)[1]
+
     if prefix:
         return ScIdtfResolveParams(idtf=f"{prefix}{nrel_pref}{part}", type=node_type)
 

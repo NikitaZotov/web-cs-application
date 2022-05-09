@@ -4,9 +4,10 @@
 {% block body %}
 
 <div class="list-group">
-  {% for class, power in classes.items() %}
-  <a href="{{url}}/kb/{{class}}" class="list-group-item d-flex justify-content-between align-items-center">
-    {{class}}
+  {% for class_idtf, power in classes.items() %}
+  <a href="{{url}}/kb?struct_id={{struct_id}}&class_idtf={{class_idtf}}"
+     class="list-group-item d-flex justify-content-between align-items-center">
+    {{class_idtf}}
     <span class="badge bg-primary rounded-pill">{{power}}</span>
   </a>
   {% endfor %}

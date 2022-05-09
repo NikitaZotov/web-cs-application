@@ -1,12 +1,12 @@
 from flask import Blueprint, request, jsonify
 
-from app.services.file_service import FileService
 from log import get_default_logger
+from ..services import RdfServiceContainer
 
 logger = get_default_logger(__name__)
 
 files = Blueprint("files", __name__)
-service = FileService()
+service = RdfServiceContainer.get_file_service()
 
 
 @files.route("/api/file/upload", methods=['GET', 'POST'])

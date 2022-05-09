@@ -11,18 +11,20 @@ from json_client.dataclass import ScAddr, ScTemplate
 from json_client.sc_keynodes import ScKeynodes
 from modules.common.constants import ScAlias
 from modules.common.generator import generate_node, set_en_main_idtf, generate_edge, generate_binary_relation
-from modules.common.searcher import check_edge, get_element_by_main_idtf, get_en_main_idtf, get_power_of_set, \
-    get_system_idtf, get_element_by_system_idtf
+from modules.common.searcher import check_edge, get_link_content
+from ..services.searcher import ModelSpecificationSearcher
 
 
 class CRUDService:
-    def __init__(self):
+    def __init__(self, searcher: ModelSpecificationSearcher):
         self._keynodes = ScKeynodes()
         self._class_attributes: Dict[str, List[str]] = {}
         self._class_relations: Dict[str, List[str]] = {}
 
+        self._searcher = searcher
+
     def add_object(self, object_idtf: str, class_idtfs: List[str]) -> bool:
-        object_addr = self._get_object(object_idtf)
+        object_addr = self._searcher.get_object(object_idtf)
         if object_addr.is_valid():
             return False
 
@@ -30,7 +32,7 @@ class CRUDService:
         set_en_main_idtf(object_addr, object_idtf)
 
         for class_idtf in class_idtfs:
-            class_addr = self._get_object(class_idtf)
+            class_addr = self._searcher.get_object(class_idtf)
             if not class_addr.is_valid():
                 class_addr = generate_node(sc_types.NODE_CONST_CLASS)
                 set_en_main_idtf(class_addr, class_idtf)
@@ -40,44 +42,11 @@ class CRUDService:
 
         return True
 
-    def _get_object(self, object_idtf: str) -> ScAddr:
-        object_addr = get_element_by_main_idtf(object_idtf)
-
-        if object_addr.is_valid():
-            return object_addr
-
-        return get_element_by_system_idtf(object_idtf)
-
-    def _get_object_idtf(self, object_addr: ScAddr) -> str:
-        main_idtf = get_en_main_idtf(object_addr)
-        if main_idtf:
-            return main_idtf
-
-        return get_system_idtf(object_addr)
-
     def get_structure_classes(self, struct_id: int) -> Dict[str, int]:
-        struct_addr = ScAddr(struct_id)
-
-        template = ScTemplate()
-        template.triple(
-            struct_addr,
-            sc_types.EDGE_ACCESS_VAR_POS_PERM,
-            [sc_types.NODE_VAR_CLASS, ScAlias.ELEMENT.value],
-        )
-        result = client.template_search(template)
-
-        class_list = {}
-        for item in result:
-            class_addr = item.get(ScAlias.ELEMENT.value)
-            class_idtf = self._get_object_idtf(class_addr)
-
-            if class_idtf:
-                class_list.update({class_idtf: get_power_of_set(class_addr)})
-
-        return class_list
+        return self._searcher.get_classes_idtfs_and_powers(ScAddr(struct_id))
 
     def add_object_params(self, object_idtf: str, class_idtf: str, param_idtfs: Dict[str, str]) -> bool:
-        object_addr = self._get_object(object_idtf)
+        object_addr = self._searcher.get_object(object_idtf)
         if not object_addr.is_valid():
             return False
 
@@ -90,7 +59,7 @@ class CRUDService:
             if class_idtf.endswith('name'):
                 continue
 
-            param_addr = self._get_object(param_idtf)
+            param_addr = self._searcher.get_object(param_idtf)
             if not param_addr.is_valid():
                 param_addr = generate_node(sc_types.NODE_CONST_CLASS)
                 set_en_main_idtf(param_addr, param_idtf)
@@ -98,7 +67,7 @@ class CRUDService:
             if not check_edge(param_addr, object_addr, sc_types.EDGE_ACCESS_VAR_POS_PERM):
                 generate_edge(param_addr, object_addr, sc_types.EDGE_ACCESS_CONST_POS_PERM)
 
-            class_addr = self._get_object(class_idtf)
+            class_addr = self._searcher.get_object(class_idtf)
             if not class_addr.is_valid():
                 class_addr = generate_node(sc_types.NODE_CONST_CLASS)
                 set_en_main_idtf(class_addr, class_idtf)
@@ -109,7 +78,7 @@ class CRUDService:
         return True
 
     def add_relation_between_objects(self, object_idtf: str, class_idtf: str, rel_subjects: Dict[str, str]) -> bool:
-        object_addr = self._get_object(object_idtf)
+        object_addr = self._searcher.get_object(object_idtf)
         if not object_addr.is_valid():
             return False
 
@@ -119,12 +88,12 @@ class CRUDService:
             if class_relations is not None and relation_idtf not in class_relations:
                 continue
 
-            subject_addr = self._get_object(subject_idtf)
+            subject_addr = self._searcher.get_object(subject_idtf)
             if not subject_addr.is_valid():
                 subject_addr = generate_node(sc_types.NODE_CONST)
                 set_en_main_idtf(subject_addr, subject_idtf)
 
-            relation_addr = self._get_object(relation_idtf)
+            relation_addr = self._searcher.get_object(relation_idtf)
             if not relation_addr.is_valid():
                 relation_addr = generate_node(sc_types.NODE_CONST_NOROLE)
                 set_en_main_idtf(relation_addr, relation_idtf)
@@ -133,7 +102,7 @@ class CRUDService:
         return True
 
     def update_object_params(self, object_idtf: str, param_idtfs: Dict[str, str]) -> bool:
-        object_addr = self._get_object(object_idtf)
+        object_addr = self._searcher.get_object(object_idtf)
         if not object_addr.is_valid():
             return False
 
@@ -141,12 +110,12 @@ class CRUDService:
             if class_idtf.endswith('name'):
                 continue
 
-            param_addr = self._get_object(param_idtf)
+            param_addr = self._searcher.get_object(param_idtf)
             if not param_addr.is_valid():
                 param_addr = generate_node(sc_types.NODE_CONST_CLASS)
                 set_en_main_idtf(param_addr, param_idtf)
 
-            class_addr = self._get_object(class_idtf)
+            class_addr = self._searcher.get_object(class_idtf)
             if not class_addr.is_valid():
                 class_addr = generate_node(sc_types.NODE_CONST_CLASS)
                 set_en_main_idtf(class_addr, class_idtf)
@@ -176,7 +145,7 @@ class CRUDService:
             client.delete_elements([result[0].get(ScAlias.ACCESS_EDGE.value)])
 
     def get_object_params(self, object_idtf: str) -> Dict[str, str]:
-        object_addr = self._get_object(object_idtf)
+        object_addr = self._searcher.get_object(object_idtf)
 
         if not object_addr.is_valid():
             return {}
@@ -202,8 +171,8 @@ class CRUDService:
             class_addr = item.get(ScAlias.NODE.value)
             param_addr = item.get(ScAlias.ELEMENT.value)
 
-            class_idtf = self._get_object_idtf(class_addr)
-            param_idtf = self._get_object_idtf(param_addr)
+            class_idtf = self._searcher.get_object_idtf(class_addr)
+            param_idtf = self._searcher.get_object_idtf(param_addr)
 
             if class_idtf and param_idtf:
                 params.update({class_idtf: param_idtf})
@@ -226,36 +195,41 @@ class CRUDService:
             relation_addr = item.get(ScAlias.RELATION_NODE.value)
             subject_addr = item.get(ScAlias.NODE.value)
 
-            relation_idtf = self._get_object_idtf(relation_addr)
-            subject_idtf = self._get_object_idtf(subject_addr)
+            relation_idtf = self._searcher.get_object_idtf(relation_addr)
+            subject_idtf = self._searcher.get_object_idtf(subject_addr)
 
-            if relation_idtf and subject_idtf:
+            if relation_idtf:
                 subjects = pairs.get(relation_idtf)
-                if subjects is None:
-                    pairs.update({relation_idtf: [subject_idtf]})
-                else:
-                    subjects.append(subject_idtf)
+
+                if subject_idtf:
+                    if subjects is None:
+                        pairs.update({relation_idtf: [subject_idtf]})
+                    else:
+                        subjects.append(subject_idtf)
+                    continue
+
+                content = get_link_content(subject_addr)
+                print(content)
+                if content:
+                    if subjects is None:
+                        pairs.update({relation_idtf: [content]})
+                    else:
+                        subjects.append(content)
 
         return pairs
 
-    def get_objects(self, class_idtf: str) -> Dict[str, Dict[str, Dict[str, List[str] | str]]]:
-        class_addr = self._get_object(class_idtf)
+    def get_objects(self, class_idtf: str, struct_id: int) -> Dict[str, Dict[str, Dict[str, List[str] | str]]]:
+        class_addr = self._searcher.get_object(class_idtf)
 
         if not class_addr.is_valid():
             return {}
 
-        template = ScTemplate()
-        template.triple(
-            class_addr,
-            sc_types.EDGE_ACCESS_VAR_POS_PERM,
-            [sc_types.NODE_VAR, ScAlias.NODE.value]
-        )
-        result = client.template_search(template)
+        result = self._searcher.get_class_elements(class_addr, ScAddr(struct_id))
 
         objects = {}
         for item in result:
             object_addr = item.get(ScAlias.NODE.value)
-            object_idtf = self._get_object_idtf(object_addr)
+            object_idtf = self._searcher.get_object_idtf(object_addr)
 
             attributes = {}
             attributes.update({"params": self._get_object_addr_params(object_addr)})
@@ -264,7 +238,7 @@ class CRUDService:
 
         return objects
 
-    def get_objects_params_classes(self, class_idtf: str) -> List[str]:
+    def get_objects_params_classes(self, class_idtf: str, struct_id: int) -> List[str]:
         params_list = self._class_attributes.get(class_idtf)
         if params_list is not None:
             return params_list
@@ -272,40 +246,37 @@ class CRUDService:
         params = []
         self._class_attributes.update({class_idtf: params})
 
-        class_addr = self._get_object(class_idtf)
+        class_addr = self._searcher.get_object(class_idtf)
 
         if not class_addr.is_valid():
             return []
 
         PARAM_CLASS = "_class"
-        template = ScTemplate()
-        template.triple(
-            class_addr,
-            sc_types.EDGE_ACCESS_VAR_POS_PERM,
-            [sc_types.NODE_VAR, ScAlias.NODE.value]
-        )
-        template.triple(
-            [sc_types.NODE_VAR_CLASS, ScAlias.ELEMENT.value],
-            sc_types.EDGE_ACCESS_VAR_POS_PERM,
-            ScAlias.NODE.value
-        )
-        template.triple(
-            [sc_types.NODE_VAR_CLASS, PARAM_CLASS],
-            sc_types.EDGE_ACCESS_VAR_POS_PERM,
-            ScAlias.ELEMENT.value
-        )
-        result = client.template_search(template)
+        elements_result = self._searcher.get_class_elements(class_addr, ScAddr(struct_id))
+        for element_item in elements_result:
+            template = ScTemplate()
+            template.triple(
+                [sc_types.NODE_VAR_CLASS, ScAlias.ELEMENT.value],
+                sc_types.EDGE_ACCESS_VAR_POS_PERM,
+                element_item.get(ScAlias.NODE.value)
+            )
+            template.triple(
+                [sc_types.NODE_VAR_CLASS, PARAM_CLASS],
+                sc_types.EDGE_ACCESS_VAR_POS_PERM,
+                ScAlias.ELEMENT.value
+            )
+            result = client.template_search(template)
 
-        for item in result:
-            class_addr = item.get(PARAM_CLASS)
-            class_idtf = self._get_object_idtf(class_addr)
+            for item in result:
+                class_addr = item.get(PARAM_CLASS)
+                class_idtf = self._searcher.get_object_idtf(class_addr)
 
-            if class_idtf not in params:
-                params.append(class_idtf)
+                if class_idtf not in params:
+                    params.append(class_idtf)
 
         return params
 
-    def get_objects_relations(self, class_idtf: str) -> List[str]:
+    def get_objects_relations(self, class_idtf: str, struct_id: int) -> List[str]:
         relations_list = self._class_relations.get(class_idtf)
         if relations_list is not None:
             return relations_list
@@ -313,71 +284,65 @@ class CRUDService:
         relations_list = []
         self._class_relations.update({class_idtf: relations_list})
 
-        class_addr = self._get_object(class_idtf)
+        class_addr = self._searcher.get_object(class_idtf)
 
         if not class_addr.is_valid():
             return []
 
-        template = ScTemplate()
-        template.triple(
-            class_addr,
-            sc_types.EDGE_ACCESS_VAR_POS_PERM,
-            [sc_types.NODE_VAR, ScAlias.NODE.value],
-        )
-        template.triple_with_relation(
-            ScAlias.NODE.value,
-            sc_types.EDGE_D_COMMON_VAR,
-            sc_types.UNKNOWN,
-            sc_types.EDGE_ACCESS_VAR_POS_PERM,
-            [sc_types.NODE_VAR_NOROLE, ScAlias.RELATION_NODE.value],
-        )
-        result = client.template_search(template)
+        elements_result = self._searcher.get_class_elements(class_addr, ScAddr(struct_id))
+        for element_item in elements_result:
+            template = ScTemplate()
+            template.triple_with_relation(
+                element_item.get(ScAlias.NODE.value),
+                sc_types.EDGE_D_COMMON_VAR,
+                [sc_types.UNKNOWN, ScAlias.ELEMENT.value],
+                sc_types.EDGE_ACCESS_VAR_POS_PERM,
+                [sc_types.NODE_VAR_NOROLE, ScAlias.RELATION_NODE.value],
+            )
+            result = client.template_search(template)
 
-        for item in result:
-            relation_addr = item.get(ScAlias.RELATION_NODE.value)
-            relation_idtf = self._get_object_idtf(relation_addr)
-            if relation_idtf.endswith("identifier*"):
-                continue
+            for item in result:
+                relation_addr = item.get(ScAlias.RELATION_NODE.value)
+                relation_idtf = self._searcher.get_object_idtf(relation_addr)
+                if relation_idtf.endswith("identifier*"):
+                    continue
 
-            if relation_idtf not in relations_list:
-                relations_list.append(relation_idtf)
+                if relation_idtf not in relations_list:
+                    if client.get_link_content(item.get(ScAlias.ELEMENT.value)).data:
+                        relations_list.append(relation_idtf + " (literal)")
+                    else:
+                        relations_list.append(relation_idtf)
 
         return relations_list
 
-    def update_objects_params_classes(self, class_idtf: str, params_classes: List[str]) -> None:
-        self.get_objects_params_classes(class_idtf)
+    def update_objects_params_classes(self, class_idtf: str, struct_id: int, params_classes: List[str]) -> None:
+        self.get_objects_params_classes(class_idtf, struct_id)
 
         params_list = self._class_attributes.get(class_idtf)
         if params_list is not None:
             params_list.extend(params_classes)
 
-    def update_objects_relations(self, class_idtf: str, relations: List[str]) -> None:
-        self.get_objects_relations(class_idtf)
+    def update_objects_relations(self, class_idtf: str, struct_id: int, relations: List[str]) -> None:
+        self.get_objects_relations(class_idtf, struct_id)
 
         relations_list = self._class_relations.get(class_idtf)
         if relations_list is not None:
             relations_list.extend(relations)
 
     def get_sorted_objects(
-            self, class_idtf: str, param_classes: List[str], relations: List[str]
+            self, class_idtf: str, struct_id: int, param_classes: List[str], relations: List[str]
     ) -> Dict[str, Dict[str, List[str]]]:
-        class_addr = self._get_object(class_idtf)
+        class_addr = self._searcher.get_object(class_idtf)
 
         if not class_addr.is_valid():
             return {}
 
-        template = ScTemplate()
-        template.triple(
-            class_addr,
-            sc_types.EDGE_ACCESS_VAR_POS_PERM,
-            [sc_types.NODE_VAR, ScAlias.NODE.value]
-        )
-        result = client.template_search(template)
+        result = self._searcher.get_class_elements(class_addr, ScAddr(struct_id))
 
         objects = {}
         for item in result:
             object_addr = item.get(ScAlias.NODE.value)
-            object_idtf = self._get_object_idtf(object_addr)
+            object_idtf = self._searcher.get_object_idtf(object_addr)
 
             params_dict = self._get_object_addr_params(object_addr)
             sorted = []
@@ -413,7 +378,7 @@ class CRUDService:
         return objects
 
     def remove_object(self, object_idtf: str) -> bool:
-        object_addr = self._get_object(object_idtf)
+        object_addr = self._searcher.get_object(object_idtf)
 
         if object_addr.is_valid():
             client.delete_elements([object_addr])
