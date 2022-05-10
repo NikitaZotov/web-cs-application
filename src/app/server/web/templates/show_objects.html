@@ -3,7 +3,8 @@
 
 {% include 'create_object.html' %}
 {% include 'add_attribute.html' %}
-{% include 'add_relation.html' %}
+{% include 'add_object_property.html' %}
+{% include 'add_data_property.html' %}
 
 {% block body %}
 
@@ -21,14 +22,14 @@
                     <button type="button"
                             class="btn btn-success float-right mr-2"
                             data-toggle="modal"
-                            data-target="#add_attribute">
-                        Add attribute
+                            data-target="#add_data_property">
+                        Add data property
                     </button>
                     <button type="button"
                             class="btn btn-success float-right mr-2"
                             data-toggle="modal"
-                            data-target="#add_relation">
-                        Add relation
+                            data-target="#add_object_property">
+                        Add object property
                     </button>
                     <button type="button"
                             class="btn btn-success float-right mr-2"
@@ -46,8 +47,11 @@
                         {% for class in param_classes %}
                             <th>{{class}}</th>
                         {% endfor %}
-                        {% for relation in relations %}
-                            <th>{{relation}}</th>
+                        {% for property in object_properties %}
+                            <th>{{property}}</th>
+                        {% endfor %}
+                        {% for property in data_properties %}
+                            <th>{{property}}</th>
                         {% endfor %}
                     </tr>
                    {% for object, attributes in objects.items() %}

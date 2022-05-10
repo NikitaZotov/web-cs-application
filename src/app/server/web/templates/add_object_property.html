@@ -1,13 +1,13 @@
-<div id="add_relation" class="modal fade" role="dialog">
+<div id="add_object_property" class="modal fade" role="dialog">
    <div class="modal-dialog">
       <div class="modal-content">
          <div class="modal-header">
-            <h4 class="modal-title">Add relation</h4>
+            <h4 class="modal-title">Add object property</h4>
          </div>
          <div class="modal-body">
-            <form action="/kb/add_relation?struct_id={{struct_id}}&class_idtf={{class_idtf}}" method="POST">
+            <form action="/kb/add_object_property?struct_id={{struct_id}}&class_idtf={{class_idtf}}" method="POST">
                <div class="form-group">
-                  <label>Relation:</label>
+                  <label>Object property:</label>
                   <input type="text" class="form-control" name="relation" required="1">
                </div>
                <div class="form-group">

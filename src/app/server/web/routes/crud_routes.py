@@ -29,7 +29,8 @@ def show_objects():
         json_object = response.json()
         struct_idtf = json_object.get("struct_idtf")
         param_classes = json_object.get("param_classes")
-        relations = json_object.get("relations")
+        object_properties = json_object.get("object_properties")
+        data_properties = json_object.get("data_properties")
         objects = json_object.get("objects")
 
         return render_template(
@@ -38,7 +39,8 @@ def show_objects():
             struct_idtf=struct_idtf,
             class_idtf=request.args["class_idtf"],
             param_classes=param_classes,
-            relations=relations,
+            object_properties=object_properties,
+            data_properties=data_properties,
             objects=objects,
         )
     else:
@@ -184,8 +186,8 @@ def add_attribute():
         return jsonify(response=response.text, status=response.status_code)
 
 
-@crud.route('/kb/add_relation', methods=['GET', 'POST'])
-def add_relation():
+@crud.route('/kb/add_object_property', methods=['GET', 'POST'])
+def add_object_property():
     struct_id = request.args["struct_id"]
     class_idtf = request.args["class_idtf"]
 
@@ -195,7 +197,32 @@ def add_relation():
     params = {}
     params.update(request.args)
     params.update({"relation": request.form["relation"]})
-    response = requests.post(f"{server_url}/api/kb/add_relation", params=params)
+    response = requests.post(f"{server_url}/api/kb/add_object_property", params=params)
+
+    if response.status_code == HTTPStatus.OK:
+        json_object = response.json()
+        if bool(json_object.get("status")):
+            flash("Relation added successfully")
+        else:
+            flash("Relation added unsuccessfully. Error occurred")
+
+        return redirect(url_for('crud.show_objects', struct_id=struct_id, class_idtf=class_idtf))
+    else:
+        return jsonify(response=response.text, status=response.status_code)
+
+
+@crud.route('/kb/add_data_property', methods=['GET', 'POST'])
+def add_data_property():
+    struct_id = request.args["struct_id"]
+    class_idtf = request.args["class_idtf"]
+
+    logger.debug(f"Update objects relations of types \"{class_idtf}\"")
+    server_url = current_app.config["SERVER_URL"]
+
+    params = {}
+    params.update(request.args)
+    params.update({"relation": request.form["relation"]})
+    response = requests.post(f"{server_url}/api/kb/add_data_property", params=params)
 
     if response.status_code == HTTPStatus.OK:
         json_object = response.json()

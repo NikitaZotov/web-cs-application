@@ -106,6 +106,12 @@ def generate_binary_relation(src: ScAddr, edge_type: ScType, trg: ScAddr, *relat
     return client.create_elements(construction)[0]
 
 
+def generate_binary_relation_in_structure(src: ScAddr, trg: ScAddr, relation: ScAddr, structure: ScAddr) -> None:
+    common_edge = generate_edge(src, trg, sc_types.EDGE_D_COMMON_CONST)
+    edge = generate_edge(relation, common_edge, sc_types.EDGE_ACCESS_CONST_POS_PERM)
+    wrap_in_set([src, common_edge, edge, relation, trg], structure)
+
+
 def generate_event(addr: ScAddr, event_type: ScEventType, event_func: Callable) -> ScEvent:
     event_params = ScEventParams(addr, event_type, event_func)
     sc_event = client.events_create([event_params])

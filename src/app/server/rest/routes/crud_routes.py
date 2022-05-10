@@ -27,9 +27,11 @@ def show_objects():
     class_idtf = request.args.get("class_idtf")
 
     param_classes = default_filter.clear(service.get_objects_params_classes(class_idtf, struct_id))
-    relations = default_filter.clear(service.get_objects_relations(class_idtf, struct_id))
+    object_properties, data_properties = service.get_objects_properties(class_idtf, struct_id)
+    object_properties = default_filter.clear(object_properties)
+    data_properties = default_filter.clear(data_properties)
 
-    objects = service.get_sorted_objects(class_idtf, struct_id, param_classes, relations)
+    objects = service.get_sorted_objects(class_idtf, struct_id, param_classes, object_properties, data_properties)
 
     logger.debug(f"Get objects of types \"{class_idtf}\"")
 
@@ -38,7 +40,8 @@ def show_objects():
         struct_idtf=service.get_structure_idtf(struct_id),
         class_idtf=class_idtf,
         param_classes=param_classes,
-        relations=relations,
+        object_properties=object_properties,
+        data_properties=data_properties,
         objects=objects
     )
 
@@ -74,7 +77,8 @@ def insert():
 
     status = service.add_object(object_idtf, struct_id, [class_idtf])
     status &= service.add_object_params(object_idtf, class_idtf, struct_id, params)
-    status &= service.add_relation_between_objects(object_idtf, class_idtf, struct_id, params)
+    status &= service.add_object_object_properties(object_idtf, class_idtf, struct_id, params)
+    status &= service.add_object_data_properties(object_idtf, class_idtf, struct_id, params)
 
     return jsonify(method="insert_object", class_idtf=class_idtf, status=status)
 
@@ -89,7 +93,8 @@ def update(object_idtf: str):
     filter_params(params)
 
     status = service.update_object_params(object_idtf, struct_id, params)
-    status &= service.update_object_relations_pairs(object_idtf, struct_id, params)
+    status &= service.update_object_object_properties(object_idtf, class_idtf, struct_id, params)
+    status &= service.update_object_data_properties(object_idtf, class_idtf, struct_id, params)
 
     logger.debug(f"Update object \"{object_idtf}\" of type \"{class_idtf}\"")
 
@@ -117,15 +122,26 @@ def add_attribute():
     return jsonify(method="add_attribute", class_idtf=class_idtf, status=True)
 
 
-@crud.route('/api/kb/add_relation', methods=['GET', 'POST'])
-def add_relation():
+@crud.route('/api/kb/add_object_property', methods=['GET', 'POST'])
+def add_object_property():
     struct_id = int(request.args.get("struct_id"))
     class_idtf = request.args.get("class_idtf")
 
-    service.update_objects_relations(class_idtf, struct_id, [request.args['relation']])
+    service.update_objects_object_properties(class_idtf, struct_id, [request.args['relation']])
     logger.debug(f"Update objects relations of types \"{class_idtf}\"")
 
-    return jsonify(method="add_relation", class_idtf=class_idtf, status=True)
+    return jsonify(method="add_object_property", class_idtf=class_idtf, status=True)
+
+
+@crud.route('/api/kb/add_data_property', methods=['GET', 'POST'])
+def add_data_property():
+    struct_id = int(request.args.get("struct_id"))
+    class_idtf = request.args.get("class_idtf")
+
+    service.update_objects_data_properties(class_idtf, struct_id, [request.args['relation']])
+    logger.debug(f"Update objects relations of types \"{class_idtf}\"")
+
+    return jsonify(method="add_data_property", class_idtf=class_idtf, status=True)
 
 
 @crud.errorhandler(400)

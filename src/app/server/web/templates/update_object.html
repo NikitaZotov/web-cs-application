@@ -12,10 +12,16 @@
                   <input type="text" class="form-control" name={{class}}>
                </div>
                {% endfor %}
-               {% for relation in relations %}
+               {% for property in object_properties %}
                <div class="form-group">
-                  <label>{{relation}}:</label>
-                  <input type="text" class="form-control" name={{relation}}>
+                  <label>{{property}}:</label>
+                  <input type="text" class="form-control" name={{property}}>
+               </div>
+               {% endfor %}
+               {% for property in data_properties %}
+               <div class="form-group">
+                  <label>{{property}}:</label>
+                  <input type="text" class="form-control" name={{property}}>
                </div>
                {% endfor %}
                <div class="form-group">

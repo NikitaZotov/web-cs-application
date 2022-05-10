@@ -222,21 +222,65 @@ class RdfModelSpecificationSearcher(ModelSpecificationSearcher):
         )
         return client.template_search(template)
 
-    def has_link_subjects(self, relation_addr: ScAddr) -> bool:
+    def get_object_object_properties(self, object_addr: ScAddr, struct_addr: ScAddr) -> List[ScTemplateResult]:
+        template = ScTemplate()
+        template.triple_with_relation(
+            object_addr,
+            sc_types.EDGE_D_COMMON_VAR,
+            [sc_types.UNKNOWN, ScAlias.NODE.value],
+            [sc_types.EDGE_ACCESS_VAR_POS_PERM, ScAlias.ACCESS_EDGE.value],
+            [sc_types.NODE_VAR_NOROLE, ScAlias.RELATION_NODE.value],
+        )
+        template.triple(
+            struct_addr,
+            sc_types.EDGE_ACCESS_VAR_POS_PERM,
+            ScAlias.ACCESS_EDGE.value,
+        )
+        return client.template_search(template)
+
+    def get_object_data_properties(self, object_addr: ScAddr, struct_addr: ScAddr) -> List[ScTemplateResult]:
+        template = ScTemplate()
+        template.triple_with_relation(
+            object_addr,
+            sc_types.EDGE_D_COMMON_VAR,
+            [sc_types.UNKNOWN, ScAlias.ELEMENT.value],
+            [sc_types.EDGE_ACCESS_VAR_POS_PERM, ScAlias.ACCESS_EDGE.value],
+            [sc_types.NODE_VAR_NOROLE, ScAlias.RELATION_NODE.value],
+        )
+        template.triple_with_relation(
+            ScAlias.ELEMENT.value,
+            sc_types.EDGE_D_COMMON_VAR,
+            [sc_types.LINK_VAR, ScAlias.NODE.value],
+            sc_types.EDGE_ACCESS_VAR_POS_PERM,
+            self._keynodes[RdfIdentifiers.NREL_LITERAL_CONTENT.value],
+        )
+        template.triple(
+            struct_addr,
+            sc_types.EDGE_ACCESS_VAR_POS_PERM,
+            ScAlias.ACCESS_EDGE.value,
+        )
+        return client.template_search(template)
+
+    def is_data_property(self, relation_addr: ScAddr, struct_addr: ScAddr) -> bool:
         template = ScTemplate()
         template.triple_with_relation(
             sc_types.NODE_VAR,
             sc_types.EDGE_D_COMMON_VAR,
-            [sc_types.UNKNOWN, ScAlias.NODE.value],
-            sc_types.EDGE_ACCESS_VAR_POS_PERM,
+            [sc_types.UNKNOWN, ScAlias.ELEMENT.value],
+            [sc_types.EDGE_ACCESS_VAR_POS_PERM, ScAlias.ACCESS_EDGE.value],
             relation_addr,
         )
         template.triple_with_relation(
-            ScAlias.NODE.value,
+            ScAlias.ELEMENT.value,
             sc_types.EDGE_D_COMMON_VAR,
-            sc_types.LINK_VAR,
+            [sc_types.LINK_VAR, ScAlias.NODE.value],
             sc_types.EDGE_ACCESS_VAR_POS_PERM,
             self._keynodes[RdfIdentifiers.NREL_LITERAL_CONTENT.value],
+        )
+        template.triple(
+            struct_addr,
+            sc_types.EDGE_ACCESS_VAR_POS_PERM,
+            ScAlias.ACCESS_EDGE.value,
         )
         return len(client.template_search(template)) != 0
 

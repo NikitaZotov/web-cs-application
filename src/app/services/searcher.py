@@ -35,7 +35,13 @@ class ModelSpecificationSearcher:
     def get_object_param_classes(self, object_addr: ScAddr, struct_addr: ScAddr) -> List[ScTemplateResult]:
         raise NotImplementedError
 
-    def has_link_subjects(self, relation_addr: ScAddr) -> bool:
+    def get_object_object_properties(self, object_addr: ScAddr, struct_addr: ScAddr) -> List[ScTemplateResult]:
+        raise NotImplementedError
+
+    def get_object_data_properties(self, object_addr: ScAddr, struct_addr: ScAddr) -> List[ScTemplateResult]:
+        raise NotImplementedError
+
+    def is_data_property(self, relation_addr: ScAddr, struct_addr: ScAddr) -> bool:
         raise NotImplementedError
 
     def get_link_content(self, object_addr: ScAddr) -> str:
