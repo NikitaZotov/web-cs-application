@@ -20,12 +20,15 @@ def search_structure():
         server_url = current_app.config["SERVER_URL"]
         route_path = f"{server_url}/api/kb/query/search"
 
-        print("query")
         response = requests.get(route_path, params={"query": request.form.get("content")})
 
         if response.status_code == HTTPStatus.OK:
             json_object = response.json()
             struct_idtf = json_object.get("struct_id")
+
+            if not bool(json_object.get("status")):
+                struct_idtf = ""
+                flash(json_object.get("error"))
         else:
             flash("Invalid query")
 

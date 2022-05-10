@@ -2,8 +2,20 @@
 {% include 'header.html' %}
 
 {% block body %}
+<div style="padding-top: 10px" align="justify">
+    <ul>
+        <li>
+            <h4>
+                <a href="{{url}}/">Go to read app documentation</a>
+            </h4>
+        </li>
+    </ul>
+</div>
+
 <div class="jumbotron p-3">
     <form method="POST" enctype="multipart/form-data">
+        {% include 'alert_error.html' %}
+
         <div class="form-group">
             <h3><label for="content">Insert scs-query</label></h3>
             <textarea name="content" placeholder="Query" rows="5"
