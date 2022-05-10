@@ -25,10 +25,8 @@ class QueryService:
             struct_addr = generate_node(sc_types.NODE_CONST_STRUCT)
             set_system_idtf(struct_addr, str(struct_addr.value))
             for item in result:
-                if item.size() == 3:
-                    wrap_in_set([item.get(0), item.get(1), item.get(2)], struct_addr)
-                else:
-                    wrap_in_set([item.get(0), item.get(1), item.get(2), item.get(3), item.get(4)], struct_addr)
+                for i in range(0, item.size(), 3):
+                    wrap_in_set([item.addrs[i], item.addrs[i + 1], item.addrs[i + 2]], struct_addr)
 
             return struct_addr.value
         except CustomException as ex:
