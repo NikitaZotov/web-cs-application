@@ -1,3 +1,6 @@
+"""
+    Author Zotov Nikita
+"""
 from flask import Blueprint, request, jsonify
 
 from log import get_default_logger

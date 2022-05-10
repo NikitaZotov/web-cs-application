@@ -5,7 +5,7 @@
 
 {% include 'alert_error.html' %}
 
-<form method="post">
+<form method="POST" enctype="multipart/form-data">
     <div class="form-group">
         <h3><label for="title">Input ontology name (it is required)</label></h3>
         <input type="text" name="title"
@@ -18,12 +18,6 @@
                   class="form-control" id="content">{{ request.form['content'] }}</textarea>
     </div>
 
-    <div class="form-group">
-        <button type="submit" class="btn btn-primary">Submit</button>
-    </div>
-</form>
-
-<form method="POST" enctype="multipart/form-data">
     <h3><label for="content">Or upload rdf-file (formats: .rdf, .owl, .xml)</label></h3>
     <input type="file" name="file" class="btn btn-primary" accept=".xml, .owl, .rdf">
 

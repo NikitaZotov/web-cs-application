@@ -1,3 +1,6 @@
+"""
+    Author Zotov Nikita
+"""
 import io
 from http import HTTPStatus
 
@@ -22,7 +25,7 @@ def upload_file():
         server_url = current_app.config["SERVER_URL"]
         route_path = f"{server_url}/api/file/upload"
 
-        if content is not None:
+        if content is not None and content:
             file_storage = form_file(content)
             response = requests.post(route_path, files={"file": file_storage}, params={"name": name})
         else:
