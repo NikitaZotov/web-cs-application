@@ -17,6 +17,9 @@ class QueryService:
     def execute(self, query: str) -> int:
         try:
             template, aliases = self._parser.parse(query)
+            if len(template.triple_list) == 0:
+                raise CustomException("Invalid query")
+
             result = client.template_search(template)
 
             struct_addr = generate_node(sc_types.NODE_CONST_STRUCT)
