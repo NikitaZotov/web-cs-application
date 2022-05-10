@@ -29,8 +29,20 @@ class ModelSpecificationSearcher:
     def remove_object_param_by_param_class(self, object_addr: ScAddr, class_addr: ScAddr) -> None:
         raise NotImplementedError
 
+    def remove_object_subject_by_relation(self, object_addr: ScAddr, relation_addr: ScAddr) -> None:
+        raise NotImplementedError
+
     def get_object_param_classes(self, object_addr: ScAddr, struct_addr: ScAddr) -> List[ScTemplateResult]:
         raise NotImplementedError
 
+    def has_link_subjects(self, relation_addr: ScAddr) -> bool:
+        raise NotImplementedError
+
     def get_link_content(self, object_addr: ScAddr) -> str:
+        raise NotImplementedError
+
+    def generate_link(self, content: str, struct_addr: ScAddr) -> ScAddr:
+        raise NotImplementedError
+
+    def get_ontologies(self) -> Dict[int, str]:
         raise NotImplementedError

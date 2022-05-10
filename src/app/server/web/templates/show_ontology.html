@@ -1,0 +1,17 @@
+{% extends 'base.html' %}
+
+{% block body %}
+    <h2 align="center">
+        <b>
+            {% block title %}
+            Structure scheme of ontology "{{struct_idtf}}"
+            {% endblock %}
+        </b>
+    </h2>
+
+    <div class="scg-viewer">
+        <iframe src="http://localhost:8000/?sys_id={{struct_idtf}}&scg_structure_view_only=true"
+                width="100%" height="850" align="center" id="frame">
+        </iframe>
+    </div>
+{% endblock %}

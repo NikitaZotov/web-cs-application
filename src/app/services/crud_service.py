@@ -10,7 +10,7 @@ from json_client.constants import sc_types
 from json_client.dataclass import ScAddr, ScTemplate
 from json_client.sc_keynodes import ScKeynodes
 from modules.common.constants import ScAlias
-from modules.common.generator import generate_node, set_en_main_idtf, generate_edge, wrap_in_set
+from modules.common.generator import generate_node, set_en_main_idtf, generate_edge, wrap_in_set, generate_link
 from ..services.searcher import ModelSpecificationSearcher
 
 
@@ -77,8 +77,11 @@ class CRUDService:
             if class_relations is not None and relation_idtf not in class_relations:
                 continue
 
-            subject_addr = self._searcher.resolve_object(subject_idtf, sc_types.NODE_CONST)
             relation_addr = self._searcher.resolve_object(relation_idtf, sc_types.NODE_CONST_NOROLE)
+            if self._searcher.has_link_subjects(relation_addr):
+                subject_addr = self._searcher.generate_link(subject_idtf, struct_addr)
+            else:
+                subject_addr = self._searcher.resolve_object(subject_idtf, sc_types.NODE_CONST)
 
             common_edge = generate_edge(object_addr, subject_addr, sc_types.EDGE_D_COMMON_CONST)
             edge = generate_edge(relation_addr, common_edge, sc_types.EDGE_ACCESS_CONST_POS_PERM)
@@ -94,6 +97,12 @@ class CRUDService:
             return False
 
         for class_idtf, param_idtf in param_idtfs.items():
+            if class_idtf not in self._class_attributes:
+                continue
+
+            if not param_idtf:
+                continue
+
             param_addr = self._searcher.resolve_object(param_idtf, sc_types.NODE_CONST_CLASS)
             class_addr = self._searcher.resolve_object(class_idtf, sc_types.NODE_CONST_CLASS)
 
@@ -101,6 +110,31 @@ class CRUDService:
 
             self._searcher.add_element_class(param_addr, object_addr, struct_addr)
             self._searcher.add_element_class(class_addr, param_addr, struct_addr)
+
+        return True
+
+    def update_object_relations_pairs(self, object_idtf: str, struct_id: int, relation_idtfs: Dict[str, str]) -> bool:
+        struct_addr = ScAddr(struct_id)
+
+        object_addr = self._searcher.get_object(object_idtf)
+        if not object_addr.is_valid():
+            return False
+
+        for relation_idtf, subject_idtf in relation_idtfs.items():
+            if relation_idtf not in self._class_relations:
+                continue
+
+            if not subject_idtf:
+                continue
+
+            relation_addr = self._searcher.resolve_object(relation_idtf, sc_types.NODE_CONST_CLASS)
+            subject_addr = self._searcher.resolve_object(subject_idtf, sc_types.NODE_CONST_CLASS)
+
+            self._searcher.remove_object_subject_by_relation(object_addr, relation_addr)
+
+            common_edge = generate_edge(object_addr, subject_addr, sc_types.EDGE_D_COMMON_CONST)
+            edge = generate_edge(relation_addr, common_edge, sc_types.EDGE_ACCESS_CONST_POS_PERM)
+            wrap_in_set([common_edge, edge, relation_addr, subject_addr], struct_addr)
 
         return True
 
@@ -340,3 +374,9 @@ class CRUDService:
             return True
 
         return False
+
+    def get_structure_idtf(self, struct_id: int) -> str:
+        return self._searcher.get_object_idtf(ScAddr(struct_id))
+
+    def get_structures(self) -> Dict[int, str]:
+        return self._searcher.get_ontologies()

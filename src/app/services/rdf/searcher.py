@@ -9,7 +9,7 @@ from json_client.constants.sc_types import ScType
 from json_client.dataclass import ScAddr, ScTemplate, ScTemplateResult
 from json_client.sc_keynodes import ScKeynodes
 from modules.common.constants import ScAlias
-from modules.common.generator import set_en_main_idtf, wrap_in_set, generate_edge, generate_node
+from modules.common.generator import set_en_main_idtf, wrap_in_set, generate_edge, generate_node, generate_link
 from modules.common.searcher import get_element_by_main_idtf, get_element_by_system_idtf, get_en_main_idtf, \
     get_system_idtf, get_link_content
 from modules.rdf_searcher.searcher import RdfConstructionsSearcher
@@ -186,6 +186,19 @@ class RdfModelSpecificationSearcher(ModelSpecificationSearcher):
         if len(result) != 0:
             client.delete_elements([result[0].get(ScAlias.ACCESS_EDGE.value)])
 
+    def remove_object_subject_by_relation(self, object_addr: ScAddr, relation_addr: ScAddr) -> None:
+        template = ScTemplate()
+        template.triple_with_relation(
+            object_addr,
+            [sc_types.EDGE_D_COMMON_VAR, ScAlias.ACCESS_EDGE.value],
+            [sc_types.NODE_VAR, ScAlias.NODE.value],
+            sc_types.EDGE_ACCESS_VAR_POS_PERM,
+            relation_addr,
+        )
+        result = client.template_search(template)
+        for item in result:
+            client.delete_elements([item.get(ScAlias.ACCESS_EDGE.value)])
+
     def get_object_param_classes(self, object_addr: ScAddr, struct_addr: ScAddr) -> List[ScTemplateResult]:
         template = ScTemplate()
         template.triple_with_relation(
@@ -209,6 +222,24 @@ class RdfModelSpecificationSearcher(ModelSpecificationSearcher):
         )
         return client.template_search(template)
 
+    def has_link_subjects(self, relation_addr: ScAddr) -> bool:
+        template = ScTemplate()
+        template.triple_with_relation(
+            sc_types.NODE_VAR,
+            sc_types.EDGE_D_COMMON_VAR,
+            [sc_types.UNKNOWN, ScAlias.NODE.value],
+            sc_types.EDGE_ACCESS_VAR_POS_PERM,
+            relation_addr,
+        )
+        template.triple_with_relation(
+            ScAlias.NODE.value,
+            sc_types.EDGE_D_COMMON_VAR,
+            sc_types.LINK_VAR,
+            sc_types.EDGE_ACCESS_VAR_POS_PERM,
+            self._keynodes[RdfIdentifiers.NREL_LITERAL_CONTENT.value],
+        )
+        return len(client.template_search(template)) != 0
+
     def get_link_content(self, object_addr: ScAddr) -> str:
         template = ScTemplate()
         template.triple_with_relation(
@@ -224,3 +255,31 @@ class RdfModelSpecificationSearcher(ModelSpecificationSearcher):
             return get_link_content(result[0].get(ScAlias.NODE.value))
 
         return ""
+
+    def generate_link(self, content: str, struct_addr: ScAddr) -> ScAddr:
+        source = generate_node(sc_types.NODE_CONST)
+        link = generate_link(content)
+
+        common_edge = generate_edge(source, link, sc_types.EDGE_D_COMMON_CONST)
+        edge = generate_edge(
+            self._keynodes[RdfIdentifiers.NREL_LITERAL_CONTENT.value], common_edge, sc_types.EDGE_ACCESS_CONST_POS_PERM
+        )
+        wrap_in_set([source, link, common_edge, edge], struct_addr)
+
+        return source
+
+    def get_ontologies(self) -> Dict[int, str]:
+        template = ScTemplate()
+        template.triple(
+            self._keynodes[RdfIdentifiers.OWL_ONTOLOGY.value],
+            sc_types.EDGE_ACCESS_VAR_POS_PERM,
+            [sc_types.UNKNOWN, ScAlias.NODE.value],
+        )
+        result = client.template_search(template)
+
+        ontologies = {}
+        for item in result:
+            ontology_addr = item.get(ScAlias.NODE.value)
+            ontologies.update({ontology_addr.value: self.get_object_idtf(ontology_addr)})
+
+        return ontologies

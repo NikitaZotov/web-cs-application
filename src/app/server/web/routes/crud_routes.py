@@ -27,6 +27,7 @@ def show_objects():
 
     if response.status_code == HTTPStatus.OK:
         json_object = response.json()
+        struct_idtf = json_object.get("struct_idtf")
         param_classes = json_object.get("param_classes")
         relations = json_object.get("relations")
         objects = json_object.get("objects")
@@ -34,6 +35,7 @@ def show_objects():
         return render_template(
             "show_objects.html",
             struct_id=request.args["struct_id"],
+            struct_idtf=struct_idtf,
             class_idtf=request.args["class_idtf"],
             param_classes=param_classes,
             relations=relations,
@@ -44,16 +46,44 @@ def show_objects():
 
 
 @crud.route('/kb/classes/<int:struct_id>')
-def get_classes(struct_id):
+def show_classes(struct_id: int):
     logger.debug(f"Get classes from structure \"{struct_id}\"")
 
     server_url = current_app.config["SERVER_URL"]
     response = requests.get(f"{server_url}/api/kb/classes/{struct_id}")
+
     if response.status_code == HTTPStatus.OK:
         json_object = response.json()
-        return render_template("show_classes_list.html", struct_id=struct_id, classes=json_object.get("classes"))
+
+        return render_template(
+            "show_classes_list.html",
+            struct_id=struct_id,
+            struct_idtf=json_object.get("struct_idtf"),
+            classes=json_object.get("classes")
+        )
     else:
         return jsonify(response=response.text, status=response.status_code)
+
+
+@crud.route('/kb/ontologies')
+def show_ontologies():
+    logger.debug(f"Get KB ontologies")
+
+    server_url = current_app.config["SERVER_URL"]
+    response = requests.get(f"{server_url}/api/kb/ontologies")
+
+    if response.status_code == HTTPStatus.OK:
+        json_object = response.json()
+        return render_template("show_ontologies_list.html", **json_object)
+    else:
+        return jsonify(response=response.text, status=response.status_code)
+
+
+@crud.route('/kb/ontology/<ontology_idtf>')
+def show_ontology(ontology_idtf: str):
+    logger.debug(f"Show KB ontology \"{ontology_idtf}\"")
+
+    return render_template("show_ontology.html", struct_idtf=ontology_idtf)
 
 
 @crud.route('/kb/insert', methods=['POST'])
@@ -71,7 +101,12 @@ def insert():
     response = requests.post(f"{server_url}/api/kb/insert", params=params)
 
     if response.status_code == HTTPStatus.OK:
-        flash("Object inserted successfully")
+        json_object = response.json()
+        if bool(json_object.get("status")):
+            flash("Object inserted successfully")
+        else:
+            flash("Object inserted unsuccessfully. Error occurred")
+
         return redirect(url_for('crud.show_objects', struct_id=struct_id, class_idtf=class_idtf))
     else:
         return jsonify(response=response.text, status=response.status_code)
@@ -91,7 +126,12 @@ def update(object_idtf: str):
     response = requests.put(f"{server_url}/api/kb/update/{object_idtf}", params=params)
 
     if response.status_code == HTTPStatus.OK:
-        flash("Object updated successfully")
+        json_object = response.json()
+        if bool(json_object.get("status")):
+            flash("Object updated successfully")
+        else:
+            flash("Object updated unsuccessfully. Error occurred")
+
         return redirect(url_for('crud.show_objects', struct_id=struct_id, class_idtf=class_idtf))
     else:
         return jsonify(response=response.text, status=response.status_code)
@@ -108,7 +148,12 @@ def delete(object_idtf: str):
     response = requests.delete(f"{server_url}/api/kb/delete/{object_idtf}", params=request.args)
 
     if response.status_code == HTTPStatus.OK:
-        flash("Object removed successfully")
+        json_object = response.json()
+        if bool(json_object.get("status")):
+            flash("Object removed successfully")
+        else:
+            flash("Object removed unsuccessfully. Error occurred")
+
         return redirect(url_for('crud.show_objects', struct_id=struct_id, class_idtf=class_idtf))
     else:
         return jsonify(response=response.text, status=response.status_code)
@@ -128,7 +173,12 @@ def add_attribute():
     response = requests.post(f"{server_url}/api/kb/add_attribute", params=params)
 
     if response.status_code == HTTPStatus.OK:
-        flash("Attribute added successfully")
+        json_object = response.json()
+        if bool(json_object.get("status")):
+            flash("Attribute added successfully")
+        else:
+            flash("Attribute added unsuccessfully. Error occurred")
+
         return redirect(url_for('crud.show_objects', struct_id=struct_id, class_idtf=class_idtf))
     else:
         return jsonify(response=response.text, status=response.status_code)
@@ -144,11 +194,16 @@ def add_relation():
 
     params = {}
     params.update(request.args)
-    params.update({"attribute": request.form["attribute"]})
+    params.update({"relation": request.form["relation"]})
     response = requests.post(f"{server_url}/api/kb/add_relation", params=params)
 
     if response.status_code == HTTPStatus.OK:
-        flash("Relation added successfully")
+        json_object = response.json()
+        if bool(json_object.get("status")):
+            flash("Relation added successfully")
+        else:
+            flash("Relation added unsuccessfully. Error occurred")
+
         return redirect(url_for('crud.show_objects', struct_id=struct_id, class_idtf=class_idtf))
     else:
         return jsonify(response=response.text, status=response.status_code)

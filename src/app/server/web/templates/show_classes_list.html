@@ -3,14 +3,44 @@
 
 {% block body %}
 
-<div class="list-group">
-  {% for class_idtf, power in classes.items() %}
-  <a href="{{url}}/kb?struct_id={{struct_id}}&class_idtf={{class_idtf}}"
-     class="list-group-item d-flex justify-content-between align-items-center">
-    {{class_idtf}}
-    <span style="color:white" class="badge bg-primary">{{power}}</span>
-  </a>
-  {% endfor %}
+<div style="padding-top: 10px" align="justify">
+    <ul>
+        <li>
+            <h4>
+                <a href="{{url}}/">Go to read app documentation</a>
+            </h4>
+        </li>
+        <li>
+            <h4>
+                <a href="{{url}}/file/upload">Upload new ontology</a>
+            </h4>
+        </li>
+        <li>
+            <h4>
+                <a href="{{url}}/kb/ontologies">Show all ontologies</a>
+            </h4>
+        </li>
+        <li>
+            <h4>
+                <a href="{{url}}/kb/ontology/{{struct_idtf}}">Show ontology structure</a>
+            </h4>
+        </li>
+    </ul>
+</div>
+
+<div style="padding-top: 15px" align="justify">
+    <h4>
+      Ontology "{{struct_idtf}}" classes:
+    </h4>
+</div>
+<div class="list-group" style="padding-top: 5px">
+    {% for class_idtf, power in classes.items() %}
+    <a href="{{url}}/kb?struct_id={{struct_id}}&class_idtf={{class_idtf}}"
+        class="list-group-item d-flex justify-content-between align-items-center">
+        {{class_idtf}}
+        <span style="color:white" class="badge bg-primary">{{power}}</span>
+    </a>
+    {% endfor %}
 </div>
 
 {% endblock %}

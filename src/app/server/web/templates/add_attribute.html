@@ -1,0 +1,23 @@
+<div id="add_attribute" class="modal fade" role="dialog">
+   <div class="modal-dialog">
+      <div class="modal-content">
+         <div class="modal-header">
+            <h4 class="modal-title">Add attribute</h4>
+         </div>
+         <div class="modal-body">
+            <form action="/kb/add_attribute?struct_id={{struct_id}}&class_idtf={{class_idtf}}" method="POST">
+               <div class="form-group">
+                  <label>Attribute:</label>
+                  <input type="text" class="form-control" name="attribute" required="1">
+               </div>
+               <div class="form-group">
+                  <button class="btn btn-primary" type="submit">Add</button>
+               </div>
+            </form>
+         </div>
+         <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+         </div>
+      </div>
+   </div>
+</div>

@@ -17,19 +17,20 @@ logger = get_default_logger(__name__)
 def upload_file():
     if request.method == 'POST':
         content = request.form.get("content")
+        name = request.form.get("title")
 
         server_url = current_app.config["SERVER_URL"]
         route_path = f"{server_url}/api/file/upload"
 
         if content is not None:
             file_storage = form_file(content)
-            response = requests.post(route_path, files={"file": file_storage})
+            response = requests.post(route_path, files={"file": file_storage}, params={"name": name})
         else:
             if "file" not in request.files:
                 flash("File was not inserted")
                 return redirect(request.url)
 
-            response = requests.post(route_path, files=request.files)
+            response = requests.post(route_path, files=request.files, params={"name": name})
 
         if response.status_code == HTTPStatus.OK:
             json_object = response.json()
@@ -39,6 +40,20 @@ def upload_file():
             return redirect(f"{url}/kb/classes/{struct_id}")
 
     return render_template("input_file.html")
+
+
+@files.route("/file/download", methods=['GET'])
+def download_file():
+    server_url = current_app.config["SERVER_URL"]
+    route_path = f"{server_url}/api/file/download"
+
+    response = requests.get(route_path, params=request.args)
+
+    if response.status_code == HTTPStatus.OK:
+        json_object = response.json()
+        return render_template("output_file.html", content=json_object.get("content"))
+    else:
+        return response
 
 
 def form_file(text: str) -> FileStorage:

@@ -1,9 +1,19 @@
 {% extends 'base.html' %}
 {% include 'header.html' %}
 
+{% include 'create_object.html' %}
+{% include 'add_attribute.html' %}
+{% include 'add_relation.html' %}
+
 {% block body %}
 
-<div class="container">
+<div style="padding-top: 10px" align="justify">
+    <h4>
+        <a href="{{url}}/kb/classes/{{struct_id}}">Choose another ontology class</a>
+    </h4>
+</div>
+
+<div class="container" style="padding-top: 15px">
     <div class="row">
         <div class="col md-12">
             <div class="jumbotron p-3">
@@ -33,26 +43,26 @@
                 <table class="table table-hover table-dark">
                     <tr>
                         <th>Name</th>
-                    {% for class in param_classes %}
-                        <th>{{class}}</th>
-                    {% endfor %}
-                    {% for relation in relations %}
-                        <th>{{relation}}</th>
-                    {% endfor %}
+                        {% for class in param_classes %}
+                            <th>{{class}}</th>
+                        {% endfor %}
+                        {% for relation in relations %}
+                            <th>{{relation}}</th>
+                        {% endfor %}
                     </tr>
                    {% for object, attributes in objects.items() %}
                     <tr>
                         <td>{{object}}</td>
                         {% for param in attributes["params"] %}
-                        <td>{{param}}</td>
+                            <td>{{param}}</td>
                         {% endfor %}
                         {% for subjects in attributes["subjects"] %}
-                        <td>{{subjects}}</td>
+                            <td>{{subjects}}</td>
                         {% endfor %}
                         <td>
-                            <a href="/kb/update?struct_id={{struct_id}}&class_idtf={{class_idtf}}"
+                            <a href="/kb/update/{{object}}?struct_id={{struct_id}}&class_idtf={{class_idtf}}"
                                class="btn btn-warning btn-xs" data-toggle="modal"
-                               data-target="#update_{{object}}">
+                               data-target="#update_object">
                                 Edit
                             </a>
                             <a href="/kb/delete/{{object}}?struct_id={{struct_id}}&class_idtf={{class_idtf}}"
@@ -62,129 +72,12 @@
                             </a>
                         </td>
                     </tr>
-
-<div id="update_{{object}}" class="modal fade" role="dialog">
-   <div class="modal-dialog">
-      <div class="modal-content">
-         <div class="modal-header">
-            <h4 class="modal-title">Update object</h4>
-         </div>
-         <div class="modal-body">
-            <form action="/kb/update/{{object}}?struct_id={{struct_id}}&class_idtf={{class_idtf}}" method="POST">
-               {% for class in param_classes %}
-               <div class="form-group">
-                  <label>{{class}}:</label>
-                  <input type="text" class="form-control" name={{class}}>
-               </div>
-               {% endfor %}
-               {% for relation in relations %}
-               <div class="form-group">
-                  <label>{{relation}}:</label>
-                  <input type="text" class="form-control" name={{relation}}>
-               </div>
-               {% endfor %}
-               <div class="form-group">
-                  <button class="btn btn-primary" type="submit">Update</button>
-               </div>
-            </form>
-         </div>
-         <div class="modal-footer">
-            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-         </div>
-      </div>
-   </div>
-</div>
+                    {% include 'update_object.html' %}
                     {% endfor %}
                 </table>
             </div>
-
-<div id="create" class="modal fade" role="dialog">
-   <div class="modal-dialog">
-      <div class="modal-content">
-         <div class="modal-header">
-            <h4 class="modal-title">Add object</h4>
-         </div>
-         <div class="modal-body">
-            <form action="/kb/insert?struct_id={{struct_id}}&class_idtf={{class_idtf}}" method="POST">
-               <div class="form-group">
-                  <label>Name:</label>
-                  <input type="text" class="form-control" name="name" required="1">
-               </div>
-               {% for class in param_classes %}
-               <div class="form-group">
-                  <label>{{class}}:</label>
-                  <input type="text" class="form-control" name={{class}} required="1">
-               </div>
-               {% endfor %}
-               {% for relation in relations %}
-               <div class="form-group">
-                  <label>{{relation}}:</label>
-                  <input type="text" class="form-control" name={{relation}}>
-               </div>
-               {% endfor %}
-               <div class="form-group">
-                  <button class="btn btn-primary" type="submit">Add</button>
-               </div>
-            </form>
-         </div>
-         <div class="modal-footer">
-            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-         </div>
-      </div>
-   </div>
-</div>
-
-<div id="add_attribute" class="modal fade" role="dialog">
-   <div class="modal-dialog">
-      <div class="modal-content">
-         <div class="modal-header">
-            <h4 class="modal-title">Add attribute</h4>
-         </div>
-         <div class="modal-body">
-            <form action="/kb/add_attribute?struct_id={{struct_id}}&class_idtf={{class_idtf}}" method="POST">
-               <div class="form-group">
-                  <label>Attribute:</label>
-                  <input type="text" class="form-control" name="attribute" required="1">
-               </div>
-               <div class="form-group">
-                  <button class="btn btn-primary" type="submit">Add</button>
-               </div>
-            </form>
-         </div>
-         <div class="modal-footer">
-            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-         </div>
-      </div>
-   </div>
-</div>
-
-<div id="add_relation" class="modal fade" role="dialog">
-   <div class="modal-dialog">
-      <div class="modal-content">
-         <div class="modal-header">
-            <h4 class="modal-title">Add relation</h4>
-         </div>
-         <div class="modal-body">
-            <form action="/kb/add_relation?struct_id={{struct_id}}&class_idtf={{class_idtf}}" method="POST">
-               <div class="form-group">
-                  <label>Relation:</label>
-                  <input type="text" class="form-control" name="relation" required="1">
-               </div>
-               <div class="form-group">
-                  <button class="btn btn-primary" type="submit">Add</button>
-               </div>
-            </form>
-         </div>
-         <div class="modal-footer">
-            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-         </div>
-      </div>
-   </div>
-</div>
-
         </div>
     </div>
 </div>
-
 
 {% endblock %}

@@ -110,15 +110,11 @@ def generate_cim_nodes(nodes_to_generate: Dict[str, ScType], with_idtf=False) ->
 
 
 def generate_relation_to_link(nodes_to_generate: Dict[str, ScAddr], relation: ScAddr) -> List[ScAddr]:
-    keynodes = ScKeynodes()
-    main_relation = keynodes[CommonIdentifiers.NREL_MAIN_IDENTIFIER.value]
-
     nodes_to_generate_list_chunks = _chunks(list(nodes_to_generate.items()))
     generated_elements = []
     for chunk in nodes_to_generate_list_chunks:
         construction = ScConstruction()
         for content, node in chunk:
-            postfix = "_idtf"
             link_content_alias = f"{ScAlias.LINK.value}_{content}"
             common_edge_content_alias = f"{ScAlias.COMMON_EDGE.value}_{content}"
 
@@ -127,16 +123,6 @@ def generate_relation_to_link(nodes_to_generate: Dict[str, ScAddr], relation: Sc
 
             construction.create_edge(sc_types.EDGE_D_COMMON_CONST, node, link_content_alias, common_edge_content_alias)
             construction.create_edge(sc_types.EDGE_ACCESS_CONST_POS_PERM, relation, common_edge_content_alias)
-
-            # link_content = ScLinkContent(content.split("#")[1].replace("_", " "), ScLinkContentType.STRING.value)
-            # construction.create_link(sc_types.LINK, link_content, link_content_alias + postfix)
-            #
-            # construction.create_edge(
-            #     sc_types.EDGE_D_COMMON_CONST, node, link_content_alias + postfix, common_edge_content_alias + postfix
-            # )
-            # construction.create_edge(
-            #     sc_types.EDGE_ACCESS_CONST_POS_PERM, main_relation, common_edge_content_alias + postfix
-            # )
 
             generated_elements.append(node)
         generated_elements.extend(client.create_elements(construction))

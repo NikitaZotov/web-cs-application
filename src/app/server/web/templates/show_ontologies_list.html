@@ -1,0 +1,43 @@
+{% extends 'base.html' %}
+{% include 'header.html' %}
+
+{% block body %}
+
+<div style="padding-top: 10px" align="justify">
+    <ul>
+        <li>
+            <h4>
+                <a href="{{url}}/">Go to read app documentation</a>
+            </h4>
+        </li>
+        <li>
+            <h4>
+                <a href="{{url}}/file/upload">Upload new ontology</a>
+            </h4>
+        </li>
+    </ul>
+</div>
+
+<div style="padding-top: 15px" align="justify">
+    <h4>
+      KB ontologies:
+    </h4>
+</div>
+<div class="list-group" style="padding-top: 5px">
+    {% for struct_id, ontology_idtf in ontologies.items() %}
+    <div class="jumbotron p-3">
+        <a href="{{url}}/kb/classes/{{struct_id}}"
+            class="list-group-item d-flex justify-content-between align-items-center">
+            {{ontology_idtf}}
+        </a>
+        <h4>
+            <a href="{{url}}/kb/ontology/{{ontology_idtf}}"
+                style="color:white" class="badge bg-primary">Show structure</a>
+            <a href="{{url}}/file/download?struct_id={{struct_id}}"
+                style="color:white" class="badge bg-primary">Download</a>
+        </h4>
+    </div>
+    {% endfor %}
+</div>
+
+{% endblock %}

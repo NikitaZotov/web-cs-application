@@ -6,41 +6,58 @@ from http import HTTPStatus
 from flask import request, jsonify, Blueprint
 
 from log import get_default_logger
+from .filter import ConceptsFilter
 from ..services import RdfServiceContainer
 
 crud = Blueprint("crud", __name__)
 service = RdfServiceContainer.get_crud_service()
+default_filter = ConceptsFilter()
 
 logger = get_default_logger(__name__)
 
 
 @crud.route('/')
-def start():
+def index():
     return 'Please, check documentation'
 
 
 @crud.route('/api/kb')
-def index():
+def show_objects():
     struct_id = int(request.args.get("struct_id"))
     class_idtf = request.args.get("class_idtf")
 
-    param_classes = service.get_objects_params_classes(class_idtf, struct_id)
-    relations = service.get_objects_relations(class_idtf, struct_id)
+    param_classes = default_filter.clear(service.get_objects_params_classes(class_idtf, struct_id))
+    relations = default_filter.clear(service.get_objects_relations(class_idtf, struct_id))
+
     objects = service.get_sorted_objects(class_idtf, struct_id, param_classes, relations)
-    print(objects)
+
     logger.debug(f"Get objects of types \"{class_idtf}\"")
 
     return jsonify(
-        method="get_objects", class_idtf=class_idtf, param_classes=param_classes, relations=relations, objects=objects
+        method="get_objects",
+        struct_idtf=service.get_structure_idtf(struct_id),
+        class_idtf=class_idtf,
+        param_classes=param_classes,
+        relations=relations,
+        objects=objects
     )
 
 
 @crud.route('/api/kb/classes/<int:struct_id>')
-def get_classes(struct_id):
+def show_classes(struct_id):
     classes = service.get_structure_classes(struct_id)
     logger.debug(f"Get classes from structure \"{struct_id}\"")
+    struct_idtf = service.get_structure_idtf(struct_id)
 
-    return jsonify(method="get_classes", struct_id=struct_id, classes=classes)
+    return jsonify(method="get_classes", struct_id=struct_id, struct_idtf=struct_idtf, classes=classes)
+
+
+@crud.route('/api/kb/ontologies')
+def show_ontologies():
+    ontologies = service.get_structures()
+    logger.debug(f"Get KB ontologies")
+
+    return jsonify(method="get_classes", ontologies=ontologies)
 
 
 @crud.route('/api/kb/insert', methods=['POST'])
@@ -72,6 +89,8 @@ def update(object_idtf: str):
     filter_params(params)
 
     status = service.update_object_params(object_idtf, struct_id, params)
+    status &= service.update_object_relations_pairs(object_idtf, struct_id, params)
+
     logger.debug(f"Update object \"{object_idtf}\" of type \"{class_idtf}\"")
 
     return jsonify(method="update_object", class_idtf=class_idtf, status=status)
@@ -127,3 +146,6 @@ def internal_server_error(error):
 def filter_params(params):
     params.pop("class_idtf")
     params.pop("struct_id")
+
+    if "name" in params.keys():
+        params.pop("name")

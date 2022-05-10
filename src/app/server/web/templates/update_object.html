@@ -1,0 +1,31 @@
+<div id="update_object" class="modal fade" role="dialog">
+   <div class="modal-dialog">
+      <div class="modal-content">
+         <div class="modal-header">
+            <h4 class="modal-title">Update object</h4>
+         </div>
+         <div class="modal-body">
+            <form action="/kb/update/{{object}}?struct_id={{struct_id}}&class_idtf={{class_idtf}}" method="POST">
+               {% for class in param_classes %}
+               <div class="form-group">
+                  <label>{{class}}:</label>
+                  <input type="text" class="form-control" name={{class}}>
+               </div>
+               {% endfor %}
+               {% for relation in relations %}
+               <div class="form-group">
+                  <label>{{relation}}:</label>
+                  <input type="text" class="form-control" name={{relation}}>
+               </div>
+               {% endfor %}
+               <div class="form-group">
+                  <button class="btn btn-primary" type="submit">Update</button>
+               </div>
+            </form>
+         </div>
+         <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+         </div>
+      </div>
+   </div>
+</div>

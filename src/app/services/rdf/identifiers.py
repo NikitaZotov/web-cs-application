@@ -11,3 +11,4 @@ class RdfIdentifiers(Enum):
     NREL_LITERAL_CONTENT = "nrel_literal_content"
     OWL_CLASS = "owl_Class"
     RDF_SUBCLASS_OF = "rdf_nrel_subClassOf"
+    OWL_ONTOLOGY = "concept_ontology"
