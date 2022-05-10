@@ -2,7 +2,7 @@ import io
 from http import HTTPStatus
 
 import requests
-from flask import Blueprint, request, render_template, current_app, flash
+from flask import Blueprint, request, render_template, current_app, flash, send_file
 from werkzeug.datastructures import FileStorage
 from werkzeug.utils import redirect
 
@@ -51,9 +51,10 @@ def download_file():
 
     if response.status_code == HTTPStatus.OK:
         json_object = response.json()
-        return render_template("output_file.html", content=json_object.get("content"))
-    else:
-        return response
+        sio = io.StringIO(json_object.get("content"))
+        bio = io.BytesIO(sio.read().encode('utf8'))
+
+        return send_file(bio, download_name="ontology.xml")
 
 
 def form_file(text: str) -> FileStorage:

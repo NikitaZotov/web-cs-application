@@ -6,8 +6,7 @@ from typing import Tuple
 from json_client.constants import sc_types
 from json_client.dataclass import ScAddr
 from json_client.sc_keynodes import ScKeynodes
-from modules.common.generator import generate_links, generate_oriented_set, generate_node, set_en_main_idtf, \
-    generate_edge
+from modules.common.generator import generate_links, generate_oriented_set, generate_node, generate_edge
 from modules.common.identifiers import ActionIdentifiers, CommonIdentifiers, QuestionStatus
 from modules.common.searcher import get_content_from_links_set
 from modules.common.utils import call_agent
@@ -43,10 +42,10 @@ class FileService:
 
     def download(self, struct_id: int) -> Tuple[bool, str]:
         links_set = generate_node(sc_types.NODE_CONST)
-        structure_node = ScAddr(struct_id)
+        structure = ScAddr(struct_id)
 
         result = call_agent(
-            {links_set: False, structure_node: False},
+            {structure: False, links_set: False},
             [
                 ActionIdentifiers.ACTION_TRANSLATE_RDF_SC_MODEL_TO_RDF.value,
                 CommonIdentifiers.QUESTION.value

@@ -1,6 +1,5 @@
 """
-    Copyright (c) 2022 Intelligent Semantic Systems LLC, All rights reserved.
-    Author Nikita Zotov
+    Author Zotov Nikita
 """
 
 from log import get_default_logger

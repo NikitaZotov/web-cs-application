@@ -64,6 +64,9 @@ class ScToRdfTranslator:
 
         element_searcher = RdfConstructionsSearcher()
         for _, element_type_addr, relation_addr in searcher:
+            if not get_system_idtf(relation_addr):
+                continue
+
             relation_uri = self._resolve_relation_uri(relation_addr, structure, rdf_graph)
 
             element_searcher.find_element_iris_in_structure(element_type_addr, structure)
