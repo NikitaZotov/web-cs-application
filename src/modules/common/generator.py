@@ -40,6 +40,16 @@ def generate_node_with_idtf(node_type: ScType, idtf: str) -> ScAddr:
     return client.resolve_keynodes([params])[0]
 
 
+def set_system_idtf(addr: ScAddr, idtf: str) -> ScAddr:
+    keynodes = ScKeynodes()
+
+    link = generate_link(idtf)
+    generate_binary_relation(
+        addr, sc_types.EDGE_D_COMMON_CONST, link, keynodes[CommonIdentifiers.NREL_SYSTEM_IDENTIFIER.value]
+    )
+    return link
+
+
 def set_en_main_idtf(addr: ScAddr, idtf: str) -> ScAddr:
     keynodes = ScKeynodes()
 

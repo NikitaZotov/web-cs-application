@@ -7,6 +7,7 @@ from app.server.app import Application
 from app.server.registrator import Registrator
 from app.server.web.routes.crud_routes import crud
 from app.server.web.routes.file_routes import files
+from app.server.web.routes.query_routes import queries
 from app.server.web.server import WebServer
 from ..web.configurator import WebConfigurator
 
@@ -18,7 +19,7 @@ def main(args):
 
         app = Application()
         registrator = Registrator(app)
-        registrator.register([crud, files])
+        registrator.register([crud, files, queries])
         server = WebServer(app, configurator)
         server.start()
     except OSError as error:

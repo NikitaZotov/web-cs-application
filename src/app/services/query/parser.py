@@ -26,6 +26,7 @@ class ScsQueryParser:
         params = []
         for sentence in sentences:
             edge_alias = ScAlias.ACCESS_EDGE.value + str(edge_number)
+            common_edge_alias = ScAlias.ACCESS_EDGE.value + str(edge_number + 1)
             if sentence.count(self.var_access_edge) == 1:
                 nodes = sentence.split(self.var_access_edge)
 
@@ -50,7 +51,7 @@ class ScsQueryParser:
                     self._resolve_param(source),
                     [sc_types.EDGE_D_COMMON_VAR, edge_alias],
                     self._resolve_param(target),
-                    [sc_types.EDGE_ACCESS_VAR_POS_PERM, edge_alias + 1],
+                    [sc_types.EDGE_ACCESS_VAR_POS_PERM, common_edge_alias],
                     self._resolve_param(relation)
                 )
 
