@@ -20,7 +20,6 @@ class ScsQueryParser:
 
     def parse(self, query: str) -> Tuple[ScTemplate, List[str]]:
         sentences = self._tokenize(query)
-        print(sentences)
 
         edge_number = 0
         template = ScTemplate()
@@ -47,7 +46,6 @@ class ScsQueryParser:
 
                 nodes = nodes.split(self.var_relation)
                 relation, target = nodes[0], nodes[1]
-                print(params)
 
                 template.triple_with_relation(
                     self._resolve_param(source, params),
